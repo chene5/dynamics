@@ -1,0 +1,197 @@
+{% extends "layout-study.html" %}
+
+{% block headstyles %}{% endblock %}
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+      <h3>Please answer the following questions.</h3>
+    </div>
+  </div>
+  <hr />
+  <br />
+
+  <form action="/survey" method="POST" class="form-horizontal">
+    <div class="row">
+      <div class="col-sm-6">
+        <h4>Choose the answer which contains a pair of words with a relationship most similar to the relationship between the pair of words in capital letters.</h4>
+        <br />
+        <h4>PONDER : PROBLEM</h4>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="gre_1" id="gre_1_a" value="a" required>
+            remove : doubt
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="gre_1" id="gre_1_b" value="b">
+            capture : runaway
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="gre_1" id="gre_1_c" value="c">
+            seize : time
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="gre_1" id="gre_1_d" value="d">
+            ruminate : idea
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="gre_1" id="gre_1_e" value="e">
+            curl : hair
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <div class="row">
+      <div class="col-sm-6">
+        <hr />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+        <h4>Fill in the blanks in the following sentences:</h4>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-6">
+        <p>Although it does contain some pioneering ideas, one would hardly characterize the work as _________.</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="gre_2" id="gre_2_a" value="a" required>
+            orthodox
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="gre_2" id="gre_2_b" value="b">
+            eccentric
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="gre_2" id="gre_2_c" value="c">
+            trifling
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="gre_2" id="gre_2_d" value="d">
+            conventional
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="gre_2" id="gre_2_e" value="e">
+            innovative
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-6">
+        <p>It was her view that the country's problems had been ________ by foreign technocrats, so that to ask for such assistance again would be counterproductive.</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="gre_3" id="gre_3_a" value="a" required>
+            ameliorated
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="gre_3" id="gre_3_b" value="b">
+            ascertained
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="gre_3" id="gre_3_c" value="c">
+            exacerbated
+          </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="gre_3" id="gre_3_d" value="d">
+            overlooked
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+    <hr />
+    <br />
+
+    <div class="row">
+      <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-2">
+          <button class="btn btn-default" name="continueBtn" id="continueBtn" type="submit">Continue</button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+
+  <!-- Continue without submitting 
+  <div class="row">
+    <div class="col-sm-offset-4 col-sm-8">
+      <a href="{{ url_for('survey') }}" class="btn btn-info" role="button">(Continue to study) (test)</a>
+    </div>
+  </div>
+  -->
+
+  <br />
+
+  <div class="row" align="center" id="message">
+    {% for message in bottle %}
+      {% if loop.first %}
+        <hr />
+      {% endif %}
+      <h3>{{ message }}</h3>
+      {% if loop.last %}
+        <hr />
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

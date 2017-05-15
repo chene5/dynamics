@@ -1,0 +1,90 @@
+{% extends "layout-study.html" %}
+
+{% block headstyles %}
+<style>
+#ideas {width: 600px; height: 200px}
+</style>
+{% endblock %}
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+      <h3>Charitable Giving Task</h3>
+    </div>
+  </div>
+  <hr />
+  <br />
+
+  <div class="row">
+    <div class="col-sm-8">
+      <p>Imagine you work for a charity organization whose goal is to prevent and cure cancer. The organization is located in a suburb near a major city. Your organization's current goal is to think of ways to increase charitable donations from members of the surrounding community.</p>
+      <br />
+      <h4>Your task is to <strong>generate creative solutions</strong> to the problem of <strong>how to increase charitable donations from members of the surrounding community</strong>.</h4>
+      <br />
+      <h4>Task guidelines: </h4>
+      <p>Please provide the three most creative solutions you can think of.</p>
+      <p><strong>Ideas must be possible to implement.</strong> For example, if your organization's mission was to "increase airport safety", the solution to "implement alien technology" would not be possible; similarly, solutions like "discontinue airline travel" do not actually solve the problem.</p>
+    </div>
+  </div>
+
+  <br />
+
+  <form action="/similarities" method="POST" class="form-horizontal">
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="form-group">
+          <label for="idea1" class="control-label sr-only">Enter your first solution here</label>
+          <textarea type="textbox" class="form-control" name="idea1" id="idea1" placeholder="Enter your first solution here" rows="4" required></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="form-group">
+          <label for="idea2" class="control-label sr-only">Enter your second solution here</label>
+          <textarea type="textbox" class="form-control" name="idea2" id="idea2" placeholder="Enter your second solution here" rows="4" required></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="form-group">
+          <label for="idea3" class="control-label sr-only">Enter your third solution here</label>
+          <textarea type="textbox" class="form-control" name="idea3" id="idea3" placeholder="Enter your third solution here" rows="4" required></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+    <hr />
+    <br />
+
+    <!-- Submit & continue -->
+    <div class="row">
+      <div class="form-group">
+        <label for="continueBtn" class="sr-only control-label">Continue</label>
+        <div class="col-sm-offset-4 col-sm-8">
+          <button type="submit" id="continueBtn" name="continueBtn" class="btn btn-default">Continue</button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  <br />
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

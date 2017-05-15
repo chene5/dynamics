@@ -1,0 +1,113 @@
+{% extends "layout.html" %}
+
+{% block headstyles %}
+{% include "button-styles.html" %}
+{% endblock %}
+
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="hidden">
+      <h2>{{ title }}</h2>
+    </div>
+    <div class="crawl" align="center">
+      <h3>{{ message }}</h3>
+    </div>
+    <hr />
+    <span id="out">
+    </span>
+  </div>
+
+  {% if not output %}
+  <div class="hidden">
+  {% endif %}
+  <br />
+  <div class="container-fluid">
+    <div class="row">
+      <table class="table table-bordered" width="100%">
+        <thead>
+          <tr>
+            {% for hword in header %}
+              <th>{{ hword }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        {% for row in output %}
+          <tr>
+            {% for word in row %}
+              {% if loop.first %}
+                <th>{{ word }}</th>
+              {% else %}
+                <td>{{ word }}</td>
+              {% endif %}
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </table>
+      <br />
+      <hr />
+    </div>
+  </div>
+  {% if not output %}
+  <br />
+  </div>
+  {% endif %}
+
+  <div class="row">
+    <div class="col-sm-6">
+      <h4>Research functions</h4>
+      <form action="/research">
+        <button class="btn btn-lg btn-default" type="submit">Research</button>
+      </form>
+    </div>
+
+    <div class="col-sm-6">
+      <h4>Extra functions</h4>
+      <form action="/extras">
+        <button class="btn btn-lg btn-default" type="submit">Extras</button>
+      </form>
+    </div>
+  </div>
+
+  <hr />
+
+  <div class="row">
+    <div class="col-sm-6">
+      <h4>About the LSA construct</h4>
+      <form action="/about">
+        <button class="btn btn-lg btn-green" type="submit">About</button>
+      </form>
+    </div>
+
+    <div class="col-sm-6">
+      <h4>Load LSA constructs</h4>
+      <form action="/load">
+        <button class="btn btn-lg btn-green" type="submit">Constructs</button>
+      </form>
+    </div>
+  </div>
+
+  <hr />
+
+  <div class="row">
+    <div class="col-sm-6">
+      <h4>List query functions</h4>
+      <form action="/query">
+        <button class="btn btn-lg btn-pink" type="submit">List query</button>
+      </form>
+    </div>
+
+    <div class="col-sm-6">
+      <h4>Admin functions</h4>
+      <form action="/admin">
+        <button class="btn btn-lg btn-pink" type="submit">Admin</button>
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

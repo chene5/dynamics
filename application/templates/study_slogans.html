@@ -1,0 +1,90 @@
+{% extends "layout-study.html" %}
+
+{% block headstyles %}{% endblock %}
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+      <h3>Generate the three most creative slogans for this product you can think of.</h3>
+    </div>
+  </div>
+  <hr />
+  <br />
+
+  <div class="row">
+    <img src="static/assets/tasks/slogans/burger_friesw.png" alt="Burger & fries">
+    <br />
+    <br />
+  </div>
+
+  <form action="/charity" method="POST" class="form-horizontal">
+    <div class="row">
+      <div class="form-group">
+        <label for="slogan1" class="control-label sr-only">Enter your first slogan here</label>
+        <div class="col-sm-4">
+          <textarea type="text" class="form-control" name="slogan1" id="slogan1" placeholder="Enter your first slogan here" rows="4"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="form-group">
+        <label for="slogan2" class="control-label sr-only">Enter your second slogan here</label>
+        <div class="col-sm-4">
+          <textarea type="text" class="form-control" name="slogan2" id="slogan2" placeholder="Enter your second slogan here" rows="4"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="form-group">
+        <label for="slogan3" class="control-label sr-only">Enter your third slogan here</label>
+        <div class="col-sm-4">
+          <textarea type="text" class="form-control" name="slogan3" id="slogan3" placeholder="Enter your third slogan here" rows="4"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+    <hr />
+    <br />
+
+    <!-- Submit & continue -->
+    <div class="row">
+      <div class="form-group">
+        <label for="continueBtn" class="sr-only control-label">Continue</label>
+        <div class="col-sm-offset-4 col-sm-8">
+          <button type="submit" id="continueBtn" name="continueBtn" class="btn btn-default">Continue</button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  <br />
+
+  <div class="row" align="center" id="message">
+    {% for message in bottle %}
+      {% if loop.first %}
+        <hr />
+      {% endif %}
+      <h3>{{ message }}</h3>
+      {% if loop.last %}
+        <hr />
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

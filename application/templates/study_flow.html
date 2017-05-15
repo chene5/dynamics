@@ -1,0 +1,90 @@
+{% extends "layout-study.html" %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+      <h2 align="center">Free Association</h2>
+      <h3>Beginning with the word <strong>{{ old_word }}</strong>, in each of the following blanks, write the next word that comes to mind from the previous word. Please put down only single words, and do not use proper nouns (such as names, brands, etc.)</h3>
+    </div>
+  </div>
+
+  <hr />
+  <br />
+
+  <div class="row">
+    <div class="col-sm-4">
+      <h3 align="center"><span id="out">{{ output }}</span></h3>
+    </div>
+  </div>
+
+  <div class="row form-horizontal">
+   <div class="form-group">
+      <label for="word_seed" class="col-sm-1 control-label">Word 1</label>
+      <div class="col-sm-3">
+        <input type="text" class="form-control" autocomplete="off" id="word_seed" name="word_seed" value="{{ old_word }}">
+      </div>
+    </div>
+  </div>
+
+  <form class="form-horizontal" action="/creativity" method="POST">
+
+    {% for number in range(2, list_length + 1) %}
+    <div class="row">
+     <div class="form-group">
+        <label for="word{{ number }}" class="col-sm-1 control-label">Word {{ number }}</label>
+        <div class="col-sm-3">
+          <input type="text" class="form-control" autocomplete="off" id="word{{ number }}" name="word{{ number }}" required>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    <br />
+    <hr />
+    <br />
+
+    <!-- Submit & continue -->
+    <div class="row">
+      <div class="form-group">
+        <label for="continueBtn" class="sr-only control-label">Continue</label>
+        <div class="col-sm-offset-4 col-sm-8">
+          <button type="submit" id="continueBtn" name="continueBtn" class="btn btn-default">Continue</button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  <br />
+
+  <div class="row" align="center" id="message">
+    {% for message in bottle %}
+      {% if loop.first %}
+        <hr />
+      {% endif %}
+      <h3>{{ message }}</h3>
+      {% if loop.last %}
+        <hr />
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block endscripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+$('form input').keydown(function (e) {
+    if (e.keyCode == 13) {
+        var inputs = $(this).parents("form").eq(0).find(":input");
+        if (inputs[inputs.index(this) + 1] != null) {                    
+            inputs[inputs.index(this) + 1].focus();
+        }
+        e.preventDefault();
+        return false;
+    }
+});
+</script>
+{% endblock %}

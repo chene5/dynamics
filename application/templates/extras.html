@@ -1,0 +1,171 @@
+{% extends "layout.html" %}
+
+{% block headstyles %}
+<style>
+body {
+    //padding-bottom: 60px;
+    //margin-bottom: 20px;
+}
+.footer {
+    position: relative;
+    //text-align: right;
+    //visibility: hidden;
+}
+</style>
+{% endblock %}
+
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="hidden">
+      <h2>{{ title }}</h2>
+    </div>
+    <div class="crawl" align="center">
+      <h3>{{ message }}</h3>
+    </div>
+    <hr />
+    <span id="out">
+    </span>
+  </div>
+
+  {% if not output %}
+  <div class="hidden">
+  {% endif %}
+  <div class="row">
+    <table class="table table-bordered" width="100%">
+      <thead>
+        <tr>
+          <th></th>
+            {% for hword in word_list %}
+              <th>{{ hword }}</th>
+                {% endfor %}
+        </tr>
+      </thead>
+      {% for row in output %}
+        <tr>
+          {% for word in row %}
+            {% if loop.first %}
+              <th>{{ word }}</th>
+            {% else %}
+              <td>{{ word }}</td>
+            {% endif %}
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </table>
+  <hr />
+  </div>
+  {% if not output %}
+  </div>
+  {% endif %}
+
+  <div class="row">
+    <div class="col-lg-6 col-sm-6 col-12">
+      <p class="help-block">Random comparison.</p>
+      <form action="/extras" method="POST" class="form-horizontal">
+        <div class="form-group">
+          <label for="random_word" class="col-sm-3 control-label">Word</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" name="random_word" id="random_word" placeholder="Enter a word">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-3 col-sm-6">
+            <p class="help-block">If you don't enter a word, two random words will be compared.</p>
+            <button class="btn btn-default" name="random" id="random" type="submit">Random</button>
+          </div>
+        </div>
+      </form>
+      <br />
+    </div>
+
+    <div class="col-lg-6 col-sm-6 col-12">
+      <p class="help-block">Compare a pair.</p>
+      <form action="/extras" method="POST" class="form-horizontal">
+        <div class="form-group">
+          <label for="pair_word1" class="col-sm-3 control-label">Word #1</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" name="pair_word1" id="pair_word1" placeholder="Enter a word">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="pair_word2" class="col-sm-3 control-label">Word #2</label>
+          <div class="col-sm-6">
+            <input type="text" class="form-control" name="pair_word2" id="pair_word2" placeholder="Enter a word">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-3 col-sm-6">
+            <p class="help-block">If you leave a space blank, a random word will be used.</p>
+            <button class="btn btn-default" name="pair" id="pair" type="submit">Compare pair</button>
+          </div>
+        </div>
+      </form>
+      <br />
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6 col-sm-6 col-12">
+        <p class="help-block">Get the average relatedness between a word and a set of randomly sampled words.</p>
+        <form action="/extras" method="POST" class="form-horizontal">
+          <div class="form-group">
+            <label for="avg_word" class="col-sm-3 control-label">Word</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" name="avg_word" id="avg_word" placeholder="Enter a word">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="avg_samples" class="col-sm-3 control-label">Number of samples</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" name="avg_samples" id="avg_samples" value="400" placeholder="Number of samples">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-6">
+              <button class="btn btn-default" name="average" id="average" type="submit">Get average</button>
+            </div>
+          </div>
+        </form>
+        <br />
+      </div>
+    
+      <div class="col-lg-6 col-sm-6 col-12">
+        <p class="help-block">Get the words that are most closely related to a given word.</p>
+        <form action="/extras" method="POST" class="form-horizontal">
+          <div class="form-group">
+            <label for="close_word" class="col-sm-4 control-label">Word</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" name="close_word" id="close_word" placeholder="Enter a word">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="num_closest" class="col-sm-4 control-label">Number of closest words</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" name="num_closest" value="10" id="num_closest" placeholder="Number of closest">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="close_iterations" class="col-sm-4 control-label">Number of iterations</label>
+            <div class="col-sm-6">
+              <input type="text" class="form-control" name="close_iterations" value="2500" id="close_iterations" placeholder="Number of iterations">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-4 col-sm-6">
+              <p class="text-warning">Warning! This function can take a very long time!</p>
+              <button class="btn btn-default" name="closest" id="closest" type="submit">Get closest</button>
+            </div>
+          </div>
+        </form>
+        <br />
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

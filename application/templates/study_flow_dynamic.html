@@ -1,0 +1,72 @@
+{% extends "layout-study.html" %}
+{% block content %}
+    <div class="study-body">
+      <div class="row" align="center">
+        <div class="col-sm-4 col-sm-offset-3">
+          <h4><span id="out">{{ output }}</span></h4>
+        </div>
+      </div>
+      <br />
+      <div class="row">
+        <div class="col-sm-4 col-sm-offset-4">
+          <div class="row">
+            <input type="text" class="thought-box" autofocus="autofocus" autocomplete="off" name="thought" id="thought" placeholder="Enter a word">
+            <span id="buttons">
+                <button class="btn btn-lg btn-default" name="explore" id="explore">Enter word</button>
+                <div style="clear:both"></div><!-- Need this to have the buttons actually inside div#buttons -->
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-4 col-sm-offset-4">
+        <span id="count"></span>
+      </div>
+    </div>
+
+{% endblock %}
+
+{% block endscripts %}
+    <script src="static/assets/js/study-compiled.js"></script>
+    <script>
+      $(document).ready(function () {
+        // This array is the whole word list.
+        word_list = [];
+        last_word = '';
+        new_word = '';
+        word_count = parseInt({{ word_count }}, 10);
+        urlProcess = "{{ url_for('process_thoughts') }}";
+        urlReset= "{{ url_for('reset_thoughts') }}";
+        urlSave = "{{ url_for('save_words') }}";
+        urlDone = "{{ url_for('uses') }}";
+
+        // Reset the text box.
+        $("input[name='thought']").val("");
+        $("input[name='thought']").focus()
+
+        // Set up the action functions.
+        $("#explore").on("click", process);
+        $("#reset").on("click", reset_thoughts);
+        $("#save").on("click", save_words);
+
+        // Set up the event handler.
+        $("#thought").keydown(function (event) {
+          if (event.keycode == 13 || event.which == 13) {
+            process();
+            return false;
+          }
+          return true;
+        });
+
+        start = new Date().getTime();
+      }); // Done with doc ready function.
+      $('#count').html('<p><div>You have entered {{ word_count }}/20 words.</div></p>');
+    </script>
+{% endblock %}

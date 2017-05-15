@@ -1,0 +1,297 @@
+{% extends "layout-study.html" %}
+
+{% block headstyles %}
+  <link rel="stylesheet" type="text/css" href="static/assets/css/bootstrap-select.css" />
+{% endblock %}
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row" align="center">
+    <h2>Please enter the following information</h2>
+  </div>
+
+  <hr />
+  <br />
+
+  <div class="row">
+    <div class="col-sm-4">
+      <p>You may skip any question you do not wish to answer.</p>
+    </div>
+  </div>
+
+  <br />
+</div>
+
+<div class="container">
+  <form class="form-horizontal" action="/debrief" method="POST">
+
+    <div class="row">
+     <div class="form-group">
+        <label for="gender" class="col-sm-3 control-label">What is your gender?</label>
+        <div class="col-sm-3">
+          <select id="gender" name="gender" class="selectpicker show-tick form-control" title="Please select one">
+            <option value = "Male">Male</option>
+            <option value = "Female">Female</option>
+            <option value = "Other">Other</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+     <div class="form-group">
+        <label for="ethnicity" class="col-sm-3 control-label">What is your ethnicity?</label>
+        <div class="col-sm-3">
+          <select id="ethnicity" name="ethnicity" class="selectpicker show-tick form-control" title="Please select one">
+            <option value = "Hispanic">Hispanic</option>
+            <option value = "Non-Hispanic">Non-Hispanic</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+     <div class="form-group">
+        <label for="race" class="col-sm-3 control-label">What is your race? (Select all that apply)</label>
+        <div class="col-sm-4">
+          {% for race, name in races.iteritems() %}
+          <p>
+          <label for="raceOpt{{ loop.index }}">
+            <input type="checkbox" name="{{ race }}"> {{ name }}
+          </label>
+          </p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+     <div class="form-group">
+        <label for="education" class="col-sm-3 control-label">What is your highest level of educational attainment?</label>
+        <div class="col-sm-3">
+          <select id="education" name="education" class="selectpicker show-tick form-control" title="Please select one">
+            <option value = "High_school">High school or less</option>
+            <option value = "Some_coll">Some college</option>
+            <option value = "Bachelor">Bachelor's degree</option>
+            <option value = "Post-grad">Post-graduate degree</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+     <div class="form-group">
+        <label for="age" class="col-sm-3 control-label">What is your age?</label>
+        <div class="col-sm-3">
+          <select id="age" name="age" class="selectpicker show-tick form-control" title="Please select one">
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+     <div class="form-group">
+        <label for="ethnicity" class="col-sm-3 control-label">Theater and film </label>
+        <div class="col-sm-5">
+          <p>
+            <label for="experienceOpt">
+              <input type="checkbox" name="exp_1"> I have performed in theater or film.
+            </label>
+          </p>
+          <p>
+            <label for="experienceOpt">
+              <input type="checkbox" name="exp_2"> My acting abilities have been recognized in a local publication.
+            </label>
+          </p>
+          <p>
+            <label for="experienceOpt">
+              <input type="checkbox" name="exp_3"> I have directed or produced a theater or film production.
+            </label>
+          </p>
+          <p>
+            <label for="experienceOpt">
+              <input type="checkbox" name="exp_4"> I have won an award or prize for acting in theater or film.
+            </label>
+          </p>
+          <p>
+            <label for="experienceOpt">
+              <input type="checkbox" name="exp_5"> I have been paid to act in theater or film.
+            </label>
+          </p>
+          <p>
+            <label for="experienceOpt">
+              <input type="checkbox" name="exp_6"> I have been paid to direct a theater or film production.
+            </label>
+          </p>
+          <p>
+            <label for="experienceOpt">
+              <input type="checkbox" name="exp_7"> My theatrical work has been recognized in a national publication.
+            </label>
+            <label for="national_count" class="col-sm-4 control-label">How many times?</label>
+              <input type="text" class="form-control" id="national_count" name="national_count" placeholder="Please enter a number">
+            </label>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="form-group">
+          <p>How successful do you feel you are in theater or film?</p>
+          <div class="radio">
+            <label class="radio-inline">
+              <input type="radio" name="success_acting" id="success_acting_1" value="1">
+              1 - Not at all successful
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="success_acting" id="success_acting_2" value="2">
+              2
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="success_acting" id="success_acting_3" value="3">
+              3
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="success_acting" id="success_acting_4" value="4">
+              4
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="success_acting" id="success_acting_5" value="5">
+              5
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="success_acting" id="success_acting_6" value="6">
+              6
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="success_acting" id="success_acting_7" value="7">
+              7 - Extremely successful
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="form-group">
+          <p>How much effort did you put into this study? You will not be penalized in any way based on your answer to this question, so please be honest.</p>
+          <div class="radio">
+            <label class="radio-inline">
+              <input type="radio" name="effort" id="effort_1" value="1">
+              1 - No effort at all
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="effort" id="effort_2" value="2">
+              2
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="effort" id="effort_3" value="3">
+              3
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="effort" id="effort_4" value="4">
+              4
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="effort" id="effort_5" value="5">
+              5
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="effort" id="effort_6" value="6">
+              6
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="effort" id="effort_7" value="7">
+              7 - Maximum effort
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="form-group">
+          <p>If you have any comments or suggestions, you may provide them here.</p>
+          <label for="comments" class="control-label sr-only">Enter your comments here</label>
+          <textarea type="text" class="form-control" name="comments" id="comments" placeholder="Please enter your comments here" rows="4"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <br />
+    <hr />
+    <br />
+
+    <!-- Submit & continue -->
+    <div class="row">
+      <div class="form-group">
+        <label for="continueBtn" class="sr-only control-label"></label>
+        <div class="col-sm-offset-4 col-sm-8">
+          <button type="submit" id="continueBtn" name="continueBtn" class="btn btn-lg btn-default">Submit information & finish</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <br />
+
+  <div class="row" align="center" id="message">
+    {% for message in bottle %}
+      {% if loop.first %}
+        <hr />
+      {% endif %}
+      <h3>{{ message }}</h3>
+      {% if loop.last %}
+        <hr />
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  <script src="static/assets/js/bootstrap-select.js"></script>
+<script>
+  // Script to populate the age drop down menu with 18 - 100
+  $(function(){
+      for (i=18;i<=99;i++){
+          $('#age').append($('<option></option>').val(i).html(i))
+      }
+  });
+
+</script>
+{% endblock %}

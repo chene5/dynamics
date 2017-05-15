@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" type="image/x-icon" href="static/assets/img/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }} | The Dynamics of Thought</title>
+  <link rel="stylesheet" type="text/css" href="static/assets/css/site.css" />
+  <link rel="stylesheet" type="text/css" href="static/assets/css/fonts/site-fonts.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <style>
+    body {
+      background-color: #fcfcfc;
+    }
+  </style>
+  {% block sectionstyles %}{% endblock %}
+  {% block headstyles %}{% endblock %}
+
+  <noscript>Sorry: To work properly, this page requires JavaScript.</noscript>
+  {% block headscripts %}{% endblock %}
+</head>
+
+<body>
+  <div class="container-fluid body-content">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!--
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  <script src="static/assets/js/respond.js"></script>
+  <script src="static/assets/js/modernizr-2.6.2.js"></script>
+  -->
+  {% block sectionscripts %}{% endblock %}
+  {% block endscripts %}{% endblock %}
+</body>
+</html>

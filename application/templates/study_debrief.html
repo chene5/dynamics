@@ -1,0 +1,72 @@
+{% extends "layout-study.html" %}
+
+{% block headstyles %}{% endblock %}
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row" align="center">
+    <div class="col-sm-4 col-sm-offset-4">
+      <h2>Naturalistic Thinking Study</h2>
+      <h3>Debriefing</h3>
+    </div>
+  </div>
+  <br />
+  <div class="row">
+    <div class="col-sm-6 col-sm-offset-3">
+      <p>This study was designed to assess naturalistic thinking—the tacit, experiential, and intuitive reasoning of everyday interaction. We are investigating how naturalistic thinking can help us measure creativity and imagination. </p>
+      <p>Your participation will help us understand how we might be able to measure and improve individuals’ capacities for creativity and imagination. </p>
+      <p>Thank you for your participation in this study. We ask that you don’t share the hypotheses of this experiment with anyone else who might take part in this research. </p>
+      <br />
+      <p>IRB Study Number 15-1620 </p>
+      <br />
+      <h4>Contact Information: </h4>
+      <p>Cameron Doyle – camdoyle@live.unc.edu </p>
+      <p>Kurt Gray, Ph.D. – kurtgray@unc.edu </p>
+      <p>IRB office – (919) 966-3113 </p>
+      <br />
+      <p>If you are interested in participating more actively in a research setting, please consider visiting the UNC Psychology Department’s <a href="http://psychology.unc.edu/undergraduate-studies/undergraduate-research">web page</a>.</p>
+    </div>
+  </div>
+
+
+  <br />
+  <br />
+
+  <div class="row">
+    <div class="col-sm-6 col-sm-offset-3">
+      <h3>In order to confirm that you completed the study, please record and use the following code: </h3>
+      <h3 align="center">C-0-FBK-MT-P</h3>
+    </div>
+  </div>
+
+  <br />
+  <br />
+  <br />
+  <br />
+
+  <div class="row" align="center">
+    <div class="col-sm-offset-4 col-sm-4">
+      <a href="{{ url_for('study_complete') }}" class="btn btn-lg btn-info" role="button">Complete study </a>
+    </div>
+  </div>
+
+  <br />
+  <br />
+
+  <div class="row" align="center" id="message">
+    {% for message in bottle %}
+      {% if loop.first %}
+        <hr />
+      {% endif %}
+      <h3>{{ message }}</h3>
+      {% if loop.last %}
+        <hr />
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

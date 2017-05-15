@@ -1,0 +1,52 @@
+{% extends "layout-study.html" %}
+
+{% block headstyles %}{% endblock %}
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row" align="center">
+    <h2>Free Association</h2>
+  </div>
+  <br />
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+      <h3>On the next page, starting with the word '{{ seed_word }}', your job is to write down the next word that follows in your mind from the previous word. Please put down only single words, and do not use proper nouns (such as names, brands, etc.)</p>
+      <p>Continue until you have a total of 20 words.</h3>
+    </div>
+  </div>
+
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+
+  <div class="row" align="center">
+    <div class="col-sm-offset-4 col-sm-4">
+      <a href="{{ url_for('flow') }}" class="btn btn-lg btn-success" role="button">Please click here to begin </a>
+    </div>
+  </div>
+
+  <br />
+
+  <div class="row" align="center" id="message">
+    {% for message in bottle %}
+      {% if loop.first %}
+        <hr />
+      {% endif %}
+      <h3>{{ message }}</h3>
+      {% if loop.last %}
+        <hr />
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

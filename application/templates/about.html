@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block headstyles %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="page-title" align="center">
+      <h3>{{ title }}</h3>
+    </div>
+  </div>
+
+  <div class="row">
+    <h4>Explore the technology that drives the Analysis Engine</h4>
+    <p>The Creativity Analysis Engine uses <a href="https://en.wikipedia.org/wiki/Latent_semantic_analysis" target="_blank">Latent Semantic Analysis.</a></p>
+    <p>It is written in Python, based on the <a href="https://radimrehurek.com/gensim/" target="_blank">gensim</a> library, and built on the <a href="http://flask.pocoo.org/" target="_blank">Flask</a> framework.</p>  </div>
+
+  <br />
+  <hr />
+  <br />
+
+  <div class="row">
+    <h4>Information about the currently loaded construct:</h4>
+    <div class="crawl">
+      <p>{{ message }}</p>
+    </div>
+  </div>
+
+  <br />
+  <br />
+  <hr />
+</div>
+{% endblock %}

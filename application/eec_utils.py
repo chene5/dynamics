@@ -1,0 +1,317 @@
+# -*- coding: utf-8 -*-
+"""eec_utils.py
+Useful utilities.
+
+Created on Mon Jun 29 11:35:12 2015
+
+@author: Eric
+"""
+import os
+import fnmatch
+from HTMLParser import HTMLParser
+import string
+# import unicodedata
+
+hparser = HTMLParser()
+
+
+def list_all_exts(top_path, exts):
+    """List all the files of a given extension set in a directory.
+    From: http://stackoverflow.com/questions/14798220/
+    how-can-i-search-sub-folders-using-glob-glob-module-in-python
+    """
+    if not top_path.endswith('/'):
+        top_path += '/'
+    ext_list = []
+    for extension in exts:
+        if not extension.startswith('.'):
+            extension = '.' + extension
+        ext_list.append(extension.lower())
+    file_list = []
+    for dirpath, dirnames, filenames in os.walk(top_path):
+        for filename in filenames:
+            if os.path.splitext(filename)[1].lower() in ext_list:
+                file_list.append(os.path.join(dirpath, filename))
+    return file_list
+
+
+def dir_to_bow(input_dir, raw=True):
+    bow_list = []
+    for filename in list_all_files_in_dirs(input_dir):
+        bow_list.append(file_to_bow(filename, raw))
+    return bow_list
+
+
+def clean_word(word):
+    cleaned_word = word.strip()
+    cleaned_word = cleaned_word.replace('\xef\xbb\xbf', '')
+    cleaned_word = hparser.unescape(cleaned_word)
+    # word = unicodedata.normalize('NFKD', unicode(word))
+    return cleaned_word
+
+
+def file_to_bow(filename,
+                raw=True,
+                exc_start=None,
+                exc_end=None,
+                no_http=False):
+    """file_to_bow()
+    Reads a file and turns it into a bag of words string.
+    Turns all the words into lowercase.
+    Optionally, does some further text cleaning.
+        This further cleaning:
+            Escapes html characters.
+            Removes:
+                's
+                punctuation
+                digits
+
+    Calls read_doc() to read the document.
+
+    Parameters:
+    filename: The filename of the text file.
+    raw: optional flag to indicate whether to clean the text
+        or just return raw text.
+    exc_start: optional string to denote the beginning of a word to
+        exclude.
+    exc_end: optional string to denote the end of a word to exclude.
+        These two can be used to exclude words like [word] or {word}
+        that often show up in text corpora that you may want to
+        exclude.
+
+    Returns: string of the bag of words.
+    """
+    with open(filename, 'r') as f:
+        file_text = read_doc(f)
+        file_text = file_text.lower()
+        if not raw:
+            new_text = ''
+            # Do word-by-word processing of the text.
+            # maybe add html stripping
+            word_list = file_text.split()
+
+            for word in word_list:
+                word = word.strip()
+                word = word.replace('\xef\xbb\xbf', '')
+                word = hparser.unescape(word)
+                # word = unicodedata.normalize('NFKD', unicode(word))
+                # Check for optional exclude delineators.
+                if exc_start and exc_end:
+                    # word = word.encode('utf-8')
+                    if word.startswith(exc_start) and \
+                            word.endswith(exc_end):
+                        continue
+
+                word = word.replace("'s", "")
+                # Check if we're excluding http:// addresses
+                if no_http and word.startswith('http://'):
+                    continue
+                # Now strip punctuation
+                word = word.strip(string.punctuation)
+                if word == '' or \
+                        word.isdigit():
+                    continue
+                new_text += word
+                new_text += ' '
+            file_text = new_text
+    return file_text
+
+
+def read_doc(f):
+    """read_doc()
+    Read a file, and return cleaned text.
+    Parameters:
+    f: file object
+
+    Returns unicode'd contents of the file.
+    """
+    """XXX Not sure how best to handle all types of encodings. So:"""
+    try:
+        document = f.read().decode('utf-8').encode('ascii', 'ignore')
+    except UnicodeDecodeError:
+        try:
+            document = f.read().decode('latin1').encode('ascii', 'ignore')
+        except:
+            # print 'Figure out next encoding.'
+            raise
+    return document
+    # XXX: Just gonna convert the whole thing to unicode
+    # return unicode(f.read())
+
+
+def write_list_to_dir(string_list,
+                      filename_base,
+                      output_dir,
+                      extension='.txt'):
+    """Write a list of strings to individual text (.txt) files."""
+    output_dir, extension = check_args(output_dir, extension)
+    # Check if the directory exists. If not, make it.
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    index = 1
+    for output in string_list:
+        # XXX: Do some cleaning of the text.
+        cleaned_output = output.encode('ascii', 'replace')
+        filename = output_dir + filename_base + '_' + str(index) + extension
+        with open(filename, 'w') as f:
+            f.write(cleaned_output)
+            f.flush()
+            f.close()
+        index += 1
+
+
+def list_all_files_in_dirs(inpath):
+    """List all the files in a directory and its subdirectories.
+    From: http://stackoverflow.com/questions/3207219/
+                 how-to-list-all-files-of-a-directory-in-python
+    """
+    file_list = [os.path.join(dirpath, filename)
+                 for dirpath, dirnames, files in os.walk(inpath)
+                 for filename in files]
+
+    return file_list
+
+
+def get_full_filename(full_filename):
+    return os.path.basename(full_filename)
+
+
+def get_filename(full_filename):
+    filename = os.path.basename(full_filename)
+    return os.path.splitext(filename)[0]
+
+
+def check_args(dirpath, extension):
+    if not extension.startswith('.'):
+        extension = '.' + extension
+    if not dirpath.endswith('/'):
+        dirpath += '/'
+    return dirpath, extension
+
+
+def list_type_in_dir(path, extension):
+    """List all the files with a given extension in a directory.
+    From: http://stackoverflow.com/questions/14798220/
+    how-can-i-search-sub-folders-using-glob-glob-module-in-python
+    """
+    path, extension = check_args(path, extension)
+    files = os.listdir(path)
+    file_list = [os.path.join(path, f)
+                 for f in fnmatch.filter(files, '*' + extension)]
+
+    return file_list
+
+
+def list_a_file_type(path, extension):
+    """List all the files with a given extension in a directory
+    and all subdirectories.
+    From: http://stackoverflow.com/questions/14798220/
+    how-can-i-search-sub-folders-using-glob-glob-module-in-python
+    """
+    path, extension = check_args(path, extension)
+    file_list = [os.path.join(dirpath, f)
+                 for dirpath, dirnames, files in os.walk(path)
+                 for f in fnmatch.filter(files, '*' + extension)]
+
+    return file_list
+
+
+def add_file_extension(cur_dir, new_ext, sub_dirs=False):
+    """Adds the given file extension to all filenames."""
+    if sub_dirs:
+        for root, dirs, files in os.walk(cur_dir):
+            for filename in files:
+                oldname = os.path.join(root, filename)
+                os.rename(oldname, oldname+new_ext)
+    else:
+        files = os.listdir(cur_dir)
+        for filename in files:
+            # print "Filename:", filename
+            os.rename(cur_dir+filename, cur_dir+filename+new_ext)
+
+
+def change_file_ext(cur_dir, old_ext, new_ext, sub_dirs=False):
+    """Change file extensions. From:
+    https://gomputor.wordpress.com/2008/09/29/
+    change-the-extension-of-multiple-files-in-a-chosen-directory-with-python
+
+    This function assumes that the text of the extension doesn't appear
+    anywhere else in the filename.
+    """
+    if sub_dirs:
+        for root, dirs, files in os.walk(cur_dir):
+            for filename in files:
+                file_ext = os.path.splitext(filename)[1]
+                if old_ext == file_ext:
+                    oldname = os.path.join(root, filename)
+                    newname = oldname.replace(old_ext, new_ext)
+                    os.rename(oldname, newname)
+    else:
+        files = os.listdir(cur_dir)
+        for filename in files:
+            file_ext = os.path.splitext(filename)[1]
+            if old_ext == file_ext:
+                newfile = filename.replace(old_ext, new_ext)
+                os.rename(cur_dir+filename, cur_dir+newfile)
+
+
+def change_multi_file_ext(cur_dir, extensions, new_ext, sub_dirs=False):
+    """Change file extensions, from multiple extensions to one. From:
+    https://gomputor.wordpress.com/2008/09/29/
+    change-the-extension-of-multiple-files-in-a-chosen-directory-with-python
+
+    This function assumes that the text of the extension doesn't appear
+    anywhere else in the filename.
+    """
+    if sub_dirs:
+        for root, dirs, files in os.walk(cur_dir):
+            for filename in files:
+                file_ext = os.path.splitext(filename)[1]
+                for ext in extensions:
+                    if ext == file_ext:
+                        oldname = os.path.join(root, filename)
+                        newname = oldname.replace(ext, new_ext)
+                        os.rename(oldname, newname)
+    else:
+        files = os.listdir(cur_dir)
+        for filename in files:
+            file_ext = os.path.splitext(filename)[1]
+            for ext in extensions:
+                if ext == file_ext:
+                    newfile = filename.replace(ext, new_ext)
+                    os.rename(cur_dir+filename, cur_dir+newfile)
+
+
+def make_closing(base, **attrs):
+    """
+    Add support for `with Base(attrs) as fout:` to the base class if it's
+    missing.
+    The base class' `close()` method will be called on context exit,
+    to always close the file properly.
+
+    This is needed for gzip.GzipFile, bz2.BZ2File etc in older Pythons
+    (<=2.6), which otherwise raise "AttributeError: GzipFile instance
+    has no attribute '__exit__'".
+
+    """
+    if not hasattr(base, '__enter__'):
+        attrs['__enter__'] = lambda self: self
+    if not hasattr(base, '__exit__'):
+        attrs['__exit__'] = lambda self, type, value, traceback: self.close()
+    return type('Closing' + base.__name__, (base, object), attrs)
+
+
+def open_smartly(fname, mode='rb'):
+    _, ext = os.path.splitext(fname)
+    if ext == '.bz2':
+        from bz2 import BZ2File
+        return make_closing(BZ2File)(fname, mode)
+    if ext == '.gz':
+        from gzip import GzipFile
+        return make_closing(GzipFile)(fname, mode)
+    if ext == '.zip':
+        # Actually this will return a list and will be weird.
+        from zipfile import ZipFile
+        return make_closing(ZipFile)(fname, mode)
+    return open(fname, mode)

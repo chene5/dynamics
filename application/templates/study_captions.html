@@ -1,0 +1,105 @@
+{% extends "layout-study.html" %}
+
+{% block headstyles %}{% endblock %}
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+      <h3>Please write a few creative sentences or a paragraph for the following images. There are no set rules or expectations; just write whatever you feel most creatively describes or fits with each image.</h3>
+    </div>
+  </div>
+  <hr />
+  <br />
+
+  <form action="/charity" method="POST" class="form-horizontal">
+    <div class="row">
+      <img src="static/assets/tasks/captions/1w.png" alt="Image 1">
+      <br />
+      <br />
+      <div class="form-group">
+        <label for="close_word" class="control-label sr-only">Enter your caption here</label>
+        <div class="col-sm-4">
+          <textarea type="text" class="form-control" name="caption_1" id="caption_1" placeholder="Enter your caption here" rows="4" required></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <div class="row">
+      <div class="col-sm-6">
+        <hr />
+      </div>
+    </div>
+    <br />
+    <br />
+
+    <div class="row">
+      <img src="static/assets/tasks/captions/2w.png" alt="Image 2">
+      <br />
+      <br />
+      <div class="form-group">
+        <label for="close_word" class="control-label sr-only">Enter your caption here</label>
+        <div class="col-sm-4">
+          <textarea type="text" class="form-control" name="caption_2" id="caption_2" placeholder="Enter your caption here" rows="4" required></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <div class="row">
+      <div class="col-sm-6">
+        <hr />
+      </div>
+    </div>
+    <br />
+    <br />
+
+    <div class="row">
+      <img src="static/assets/tasks/captions/7w.png" alt="Image 3">
+      <br />
+      <br />
+      <div class="form-group">
+        <label for="close_word" class="control-label sr-only">Enter your caption here</label>
+        <div class="col-sm-4">
+          <textarea type="text" class="form-control" name="caption_3" id="caption_3" placeholder="Enter your caption here" rows="4" required></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+    <hr />
+    <br />
+
+    <!-- Submit & continue -->
+    <div class="row">
+      <div class="form-group">
+        <label for="continueBtn" class="sr-only control-label">Continue</label>
+        <div class="col-sm-offset-4 col-sm-8">
+          <button type="submit" id="continueBtn" name="continueBtn" class="btn btn-default">Continue</button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  <br />
+
+  <div class="row" align="center" id="message">
+    {% for message in bottle %}
+      {% if loop.first %}
+        <hr />
+      {% endif %}
+      <h3>{{ message }}</h3>
+      {% if loop.last %}
+        <hr />
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'content-nonav.html' %}
+
+{% block headstyle %}
+<style>
+.navbar, .navbar-toggle, .scroll-arrow {
+  visibility: hidden;
+}
+#whoWeAre {
+  display: none;
+}
+</style>
+{% endblock %}
+
+{% block headertext %}{{ title }}{% endblock %}
+{% block subheadertext %}{{ message }}{% endblock %}

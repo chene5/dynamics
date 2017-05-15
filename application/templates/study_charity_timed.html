@@ -1,0 +1,128 @@
+{% extends "layout-study.html" %}
+
+{% block headstyles %}
+<style>
+#ideas {width: 600px; height: 200px}
+</style>
+{% endblock %}
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2" align="center">
+      <h3>Charitable Giving Task</h3>
+    </div>
+  </div>
+  <hr />
+  <br />
+
+  <div class="row">
+    <div class="col-sm-8">
+      <p>Imagine you work for a charity organization whose goal is to prevent and cure cancer. The organization is located in a suburb near a major city. Your organization's current goal is to think of ways to increase charitable donations from members of the surrounding community.</p>
+      <p>Your task is to <strong>generate solutions</strong> to the problem of <strong>how to increase charitable donations from members of the surrounding community</strong>.</p>
+      <br />
+      <h4>Task guidelines: </h4>
+      <p>Think of as many solutions as you can.</p>
+      <p><strong>Ideas must be possible to implement.</strong> For example, if your organization's mission was to "increase airport safety", the solution to "implement alien technology" would not be possible; similarly, solutions like "discontinue airline travel" do not actually solve the problem.</p>
+      <p>You will have up to 2 minutes to work on this task.</p>
+      <br />
+      <p>This page will automatically advance in:</p>
+      <h3><strong><span id="timer"></span></strong> minutes</h3>
+    </div>
+  </div>
+
+  <br />
+
+  <form action="/captions" method="POST" class="form-horizontal">
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="form-group">
+          <label for="idea1" class="control-label sr-only">Enter your first fund-raising idea here</label>
+          <textarea type="textbox" class="form-control" name="idea1" id="idea1" placeholder="Enter your first fund-raising idea here" rows="4"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="form-group">
+          <label for="idea2" class="control-label sr-only">Enter your second fund-raising idea here</label>
+          <textarea type="textbox" class="form-control" name="idea2" id="idea2" placeholder="Enter your second fund-raising idea here" rows="4"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="form-group">
+          <label for="idea3" class="control-label sr-only">Enter your third fund-raising idea here</label>
+          <textarea type="textbox" class="form-control" name="idea3" id="idea3" placeholder="Enter your third fund-raising idea here" rows="4"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+    <hr />
+    <br />
+
+    <!-- Submit & continue -->
+    <div class="row">
+      <div class="form-group">
+        <label for="continueBtn" class="sr-only control-label">Continue</label>
+        <div class="col-sm-offset-4 col-sm-8">
+          <button type="submit" id="continueBtn" name="continueBtn" class="btn btn-default">Continue</button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  <br />
+
+</div>
+{% endblock %}
+
+{% block endscripts %}
+<script>
+urlDone = "{{ url_for('captions') }}";
+urlProcess = "{{ url_for('charity') }}";
+function returnProcess(data) {
+  $(location).attr('href', urlDone);
+}
+
+function startTimer(duration, display) {
+    var timer = duration, minutes, seconds;
+    setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        // minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.text(minutes + ":" + seconds);
+
+        if (--timer < 0) {
+          timer = duration;
+          ideas = $("textarea[name='ideas']").val();
+          $.post(urlProcess, { 'ideas': ideas, 'continueBtn': '' }, returnProcess, "json")
+            .done(function () {
+            });
+        }
+    }, 1000);
+}
+
+jQuery(function ($) {
+  var twoMinutes = 60 * 2,
+    display = $('#timer');
+  startTimer(twoMinutes, display);
+});
+</script>
+{% endblock %}

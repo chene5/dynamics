@@ -1,0 +1,76 @@
+{% extends "layout-study.html" %}
+
+{% block headstyles %}{% endblock %}
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+      <h3>Imagine that someone gives you a box of popsicle sticks. In the spaces below, please indicate three possible uses for the popsicle sticks. Be as creative as possible.</h3>
+    </div>
+  </div>
+  <hr />
+  <br />
+
+  <form action="/captions" method="POST" class="form-horizontal">
+    <div class="row">
+      <div class="col-12">
+      <div class="form-group">
+        <label for="close_word" class="col-sm-1 control-label">1. </label>
+        <div class="col-sm-4">
+          <textarea type="text" class="form-control" name="use_1" id="use_1" placeholder="Enter your first idea" rows="4" required></textarea>
+        </div>
+      </div>
+      <br />
+
+      <div class="form-group">
+        <label for="num_closest" class="col-sm-1 control-label">2. </label>
+        <div class="col-sm-4">
+          <textarea type="text" class="form-control" name="use_2" id="use_2" placeholder="Enter your second idea" rows="4" required></textarea>
+        </div>
+      </div>
+      <br />
+
+      <div class="form-group">
+        <label for="close_iterations" class="col-sm-1 control-label">3. </label>
+        <div class="col-sm-4">
+          <textarea type="text" class="form-control" name="use_3" id="use_3" placeholder="Enter your third idea" rows="4" required></textarea>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+    <hr />
+    <br />
+
+    <div class="row">
+      <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-2">
+          <button class="btn btn-default" name="continueBtn" id="continueBtn" type="submit">Continue</button>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    </form>
+
+    <br />
+
+  <div class="row" align="center" id="message">
+    {% for message in bottle %}
+      {% if loop.first %}
+        <hr />
+      {% endif %}
+      <h3>{{ message }}</h3>
+      {% if loop.last %}
+        <hr />
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

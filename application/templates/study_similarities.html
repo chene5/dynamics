@@ -1,0 +1,105 @@
+{% extends "layout-study.html" %}
+
+{% block headstyles %}{% endblock %}
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+      <h3>For each of the following pairs, please describe the most creative way that the two are similar to each other.</h3>
+    </div>
+  </div>
+
+  <hr />
+  <br />
+
+  <h4>Cat & Mouse</h4>
+  <form action="/survey" method="POST" class="form-horizontal">
+    <div class="row">
+      <div class="col-12">
+        <div class="form-group">
+          <label for="close_word" class="sr-only control-label">Pair 1</label>
+          <div class="col-sm-4">
+            <textarea type="text" class="form-control" name="pair_1" id="pair_1" placeholder="How are these similar?" rows="4" required></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <div class="row">
+      <div class="col-sm-6">
+        <hr />
+      </div>
+    </div>
+    <br />
+    <br />
+
+    <h4>Train & Tractor</h4>
+    <div class="row">
+      <div class="col-12">
+        <div class="form-group">
+          <label for="close_word" class="sr-only control-label">Pair 2</label>
+          <div class="col-sm-4">
+            <textarea type="text" class="form-control" name="pair_2" id="pair_2" placeholder="How are these similar?" rows="4" required></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <div class="row">
+      <div class="col-sm-6">
+        <hr />
+      </div>
+    </div>
+    <br />
+    <br />
+
+    <h4>Desk & Table</h4>
+      <div class="row">
+        <div class="col-12">
+          <div class="form-group">
+            <label for="close_word" class="sr-only control-label">Pair 3</label>
+            <div class="col-sm-4">
+              <textarea type="text" class="form-control" name="pair_3" id="pair_3" placeholder="How are these similar?" rows="4" required></textarea>
+            </div>
+          </div>
+       </div>
+     </div>
+
+    <br />
+    <br />
+    <hr />
+    <br />
+
+    <div class="row">
+      <div class="form-group">
+        <label for="continueBtn" class="sr-only control-label">Continue</label>
+        <div class="col-sm-offset-4 col-sm-2">
+          <button class="btn btn-default" name="continueBtn" id="continueBtn" type="submit">Continue</button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  <br />
+
+  <div class="row" align="center" id="message">
+    {% for message in bottle %}
+      {% if loop.first %}
+        <hr />
+      {% endif %}
+      <h3>{{ message }}</h3>
+      {% if loop.last %}
+        <hr />
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block headstyles %}
+<style>
+body {
+    /* Margin bottom by footer height */
+    /* Use this for a sticky footer. */
+    margin-bottom: 100px;
+}
+.footer {
+    /* Use absolute position for a sticky footer. */
+    /* Set the fixed height of the footer here */
+    height: 100px;
+    position: absolute;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<h2 class="hidden">{{ title }}</h2>
+<h3>{{ message }}</h3>
+<br />
+
+<address>
+Contact info for a bunch of cool people.<br />
+</address>
+
+{% endblock %}

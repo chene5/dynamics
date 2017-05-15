@@ -1,0 +1,21 @@
+{% extends "layout-study.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h2>{{ header }}</h2>
+</div>
+<div class="col-sm-8">
+  <form method="POST" class="form-inline" action="/study_login">
+    {{ form.hidden_tag() }}
+    <p>{{ form.username.label }} {{ form.username(size=20) }}</p>
+    <!-- <p>{{ form.submit }}</p> -->
+      <button type="submit" class="btn btn-default" name="submit-button">Sign in</button>
+    <br>
+  </form>
+  <div class="row" align="center">
+    <div class="col-sm-offset-4 col-sm-4">
+      <a href="{{ url_for('intro') }}" class="btn btn-lg btn-info" role="button">(Testing: Next page)</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

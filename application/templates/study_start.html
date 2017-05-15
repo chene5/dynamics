@@ -1,0 +1,48 @@
+{% extends "layout-study.html" %}
+
+{% block headstyles %}{% endblock %}
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <br />
+  <br />
+  <br />
+  <div class="row" align="center">
+    <h2>Welcome to the study</h2>
+  </div>
+
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+  <br />
+
+  <div class="row" align="center">
+    <div class="col-sm-offset-4 col-sm-4">
+      <a href="{{ url_for('irb') }}" class="btn btn-lg btn-success" role="button">Please click here to begin </a>
+    </div>
+  </div>
+
+  <br />
+
+  <div class="row" align="center" id="message">
+    {% for message in bottle %}
+      {% if loop.first %}
+        <hr />
+      {% endif %}
+      <h3>{{ message }}</h3>
+      {% if loop.last %}
+        <hr />
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

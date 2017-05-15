@@ -1,0 +1,127 @@
+{% extends "layout.html" %}
+
+{% block headstyles %}
+{% include "button-styles.html" %}
+{% endblock %}
+
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="hidden">
+      <h2>{{ title }}</h2>
+    </div>
+    <div class="crawl" align="center">
+      <h3>{{ message }}</h3>
+    </div>
+    <hr />
+    <span id="out">
+    </span>
+  </div>
+
+  {% if not output %}
+  <div class="hidden">
+  {% endif %}
+  <br />
+  <div class="container-fluid">
+    <div class="row">
+      <table class="table table-bordered" width="100%">
+        <thead>
+          <tr>
+            {% for hword in header %}
+              <th>{{ hword }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        {% for row in output %}
+          <tr>
+            {% for word in row %}
+              {% if loop.first %}
+                <th>{{ word }}</th>
+              {% else %}
+                <td>{{ word }}</td>
+              {% endif %}
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </table>
+      <br />
+      <hr />
+    </div>
+  </div>
+  {% if not output %}
+  <br />
+  </div>
+  {% endif %}
+
+  <h3>Database query functions.</h3>
+  <form action="/admin" method="POST" class="form-horizontal">
+    <div class="row">
+      <div class="col-sm-6">
+          <div class="form-group">
+            <h4>Set limit.</h4>
+            <input type="text" class="form-control" name="dataCount" id="dataCount" value="50">
+            <button class="btn btn-lg btn-default" name="downloadLatest" id="downloadLatest" type="submit">Download latest data</button>
+          </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="form-group">
+          <button class="btn btn-lg btn-warning" name="downloadData" id="downloadData" type="submit">Download all data</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="form-group">
+          <button class="btn btn-lg btn-default" name="showUsers" id="showUsers" type="submit">Show users</button>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <button class="btn btn-lg btn-default" name="showLatestUsers" id="showLatestUsers" type="submit">Show latest users</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="form-group">
+          <button class="btn btn-lg btn-pink" name="showAnswers" id="showAnswers" type="submit">Show answers</button>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="form-group">
+          <button class="btn btn-lg btn-pink" name="showLatestAnswers" id="showLatestAnswers" type="submit">Show latest answers</button>
+        </div>
+      </div>
+      <div class="col-sm-2">
+        <div class="form-group">
+          <button class="btn btn-lg btn-pink" name="downloadAnswers" id="downloadAnswers" type="submit">Download answers</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="form-group">
+          <button class="btn btn-lg btn-warning" name="showSequences" id="showSequences" type="submit">Show sequences</button>
+        </div>
+      </div>
+      <div class="col-sm-2">
+        <div class="form-group">
+          <button class="btn btn-lg btn-warning" name="downloadSequences" id="downloadSequences" type="submit">Download sequences</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

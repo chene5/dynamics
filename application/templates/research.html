@@ -1,0 +1,125 @@
+{% extends "layout.html" %}
+
+{% block headstyles %}
+{% include "button-styles.html" %}
+{% endblock %}
+
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="hidden">
+      <h2>{{ title }}</h2>
+    </div>
+    <div class="crawl" align="center">
+      <h3>{{ message }}</h3>
+    </div>
+    <hr />
+    <span id="out">
+    </span>
+  </div>
+
+  {% if not output %}
+  <div class="hidden">
+  {% endif %}
+  <br />
+  <div class="container-fluid">
+    <div class="row">
+      <table class="table table-bordered" width="100%">
+        <thead>
+          <tr>
+            {% for hword in header %}
+              <th>{{ hword }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        {% for row in output %}
+          <tr>
+            {% for word in row %}
+              {% if loop.first %}
+                <th>{{ word }}</th>
+              {% else %}
+                <td>{{ word }}</td>
+              {% endif %}
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </table>
+      <br />
+      <hr />
+    </div>
+  </div>
+  {% if not output %}
+  <br />
+  </div>
+  {% endif %}
+
+  <div class="row">
+    <h3>Analysis functions.</h3>
+    <div class="col-sm-6">
+      <h4>Extract the words from a data file and download the word lists as a csv file:</h4>
+      <form action="/research" method="POST" class="form-inline" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="dataFile" class="sr-only">File input</label>
+          <input type="file" id="dataFile" name="dataFile">
+        </div>
+        <br />
+        <br />
+        <button class="btn btn-lg btn-default" name="wordsFromFile" id="wordsFromFile" type="submit">Get these words</button>
+      </form>
+    </div>
+
+    <div class="col-sm-6">
+      <h4>Analyze a word list file and download the matrices as a csv file:</h4>
+      <form action="/research" method="POST" class="form-inline" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="dataFile" class="sr-only">File input</label>
+          <input type="file" id="dataFile" name="dataFile">
+        </div>
+        <br />
+        <br />
+        <button class="btn btn-lg btn-default" name="analyzeWordsFile" id="analyzeWordsFile" type="submit">Analyze these words</button>
+      </form>
+    </div>
+  </div>
+
+  <hr />
+
+  <div class="row">
+    <h3>Adjust creativity parameters.</h3>
+    <div class="col-sm-6">
+      <h4>Get creativity threshold.</h4>
+      <form action="/research" method="POST" class="form-horizontal">
+        <button class="btn btn-lg btn-default" name="getCreatThresh" id="getCreatThresh" type="submit">Get threshold</button>
+      </form>
+    </div>
+    <div class="col-sm-6">
+      <form action="/research" method="POST" class="form-horizontal">
+        <div class="form-group">
+          <h4>Set creativity threshold.</h4>
+          <input type="text" class="form-control" name="newCreatThresh" id="newCreatThresh" placeholder="New threshold">
+        </div>
+        <div class="form-group">
+          <button class="btn btn-lg btn-default" name="setCreatThresh" id="newCreatThresh" type="submit">Set threshold</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <hr />
+
+  <div class="row">
+    <h3>Analyze tweets.</h3>
+    <div class="col-sm-6">
+      <h4>Analyze tweet json files.</h4>
+      <form action="/research" method="POST" class="form-horizontal">
+        <button class="btn btn-lg btn-default" name="processTweets" id="processTweets" type="submit">Analyze tweets</button>
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

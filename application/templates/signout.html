@@ -1,0 +1,24 @@
+{% extends "layout-study.html" %}
+
+{% block headstyles %}
+  <link href="static/assets/css/daisy.css" rel="stylesheet" />
+  <link href="static/assets/css/daisy-pres.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header" align="center">
+    <h1>Click to sign out</h1>
+  </div>
+  <div class="row">
+    <form action="/logout" method="POST" class="form-horizontal">
+      <div class="form-group">
+        <label for="signout" class="sr-only control-label">Sign out</label>
+        <div class="col-sm-4">
+          <button type="submit" id="signout" name="signout" class="btn btn-lg btn-default">Sign out</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

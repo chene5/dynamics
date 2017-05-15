@@ -1,0 +1,12 @@
+Semilar model: TASA 7 
+Dictionary contains 91,365 words.
+
+7.TASA_OF (T7): all the words as they appear in documents were considered.
+
+http://deeptutor2.memphis.edu/Semilar-Web/public/lsa-models-lrec2014.html
+
+Stefanescu, D., Banjade, R., and Rus, V. (2014). Latent Semantic
+    Analysis Models on Wikipedia and TASA. The 9th Language
+    Resources and Evaluation Conference (LREC 2014), 26-31 May,
+    Reykjavik, Iceland.
+

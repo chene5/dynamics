@@ -1,0 +1,97 @@
+{% extends "layout-study.html" %}
+{% block content %}
+    <div class="row">
+      <div class="col-sm-8 col-sm-offset-2">
+        <h2 align="center">Free Association</h2>
+        <h3>Starting with the word '{{ old_word }}', your job is to write down the next word that follows in your mind from the previous word. Please put down only single words, and do not use proper nouns (such as names, brands, etc.)</h3> 
+        <h3>Try to think of words that are different from your previous words.</h3>
+      </div>
+    </div>
+
+    <br />
+
+    <div class="study-body">
+      <div class="row" align="center">
+        <div class="col-sm-6 col-sm-offset-3">
+          <h4><span id="out"></span></h4>
+          <h4><span id="sim"></span></h4>
+        </div>
+      </div>
+      <br />
+      <div class="row">
+        <div class="col-sm-4 col-sm-offset-4">
+          <div class="row">
+            <input type="text" class="thought-box" autofocus="autofocus" autocomplete="off" name="thought" id="thought" placeholder="Enter a word">
+            <span id="buttons">
+                <button class="btn btn-lg btn-default" name="explore" id="explore">Enter word</button>
+                <div style="clear:both"></div><!-- Need this to have the buttons actually inside div#buttons -->
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-sm-4 col-sm-offset-4">
+        <span id="count"></span>
+      </div>
+    </div>
+
+
+    <div class="row" style="display: none;">
+      <div class="col-sm-4 col-sm-offset-3">
+        <div class="words" id="previouswords">
+          <h3 align="center">Previous words</h3>
+          <ul class="list-group">
+            <li class="list-group-item active">{{ old_word }}</li>
+            {% for word in word_list %}
+              <li class="list-group-item">{{ word }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
+
+{% block endscripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="static/assets/js/flow-last.js"></script>
+    <script>
+      $(document).ready(function () {
+        // This array is the whole word list.
+        word_list = [];
+        last_word = '';
+        new_word = '';
+        word_count = parseInt({{ word_count }}, 10);
+        urlProcess = "{{ url_for('process_thoughts') }}";
+        urlReset= "{{ url_for('reset_thoughts') }}";
+        urlSave = "{{ url_for('save_words') }}";
+        urlDone = "{{ url_for('uses') }}";
+
+        // Reset the text box.
+        $("input[name='thought']").val("");
+        $("input[name='thought']").focus()
+
+        // Set up the action functions.
+        $("#explore").on("click", process);
+        $("#reset").on("click", reset_thoughts);
+        $("#save").on("click", save_words);
+
+        // Set up the event handler.
+        $("#thought").keydown(function (event) {
+          if (event.keycode == 13 || event.which == 13) {
+            process();
+            return false;
+          }
+          return true;
+        });
+
+        start = new Date().getTime();
+      }); // Done with doc ready function.
+      // $('#count').html('<p><div>You have entered {{ word_count }}/20 words.</div></p>');
+      // word_count = {{ word_count }};
+      // print_count(word_count);
+    </script>
+{% endblock %}

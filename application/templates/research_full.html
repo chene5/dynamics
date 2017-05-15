@@ -1,0 +1,267 @@
+{% extends "layout-styled.html" %}
+
+{% block headstyles %}
+  <style>
+    .btn-green {
+      background-color: green;
+      opacity: 0.8;
+      filter: alpha(opacity=80);
+      border-color: #eeeeee;
+      color: #eeeeee;
+    }
+    .btn-green:hover, .btn-green:focus, .btn-green:active, .btn-green.active, .open > .btn-green.dropdown-toggle {
+      background-color: green;
+      color: #dddddd;
+      border-color: #dddddd;
+    }
+    .btn-blue {
+      background-color: blue;
+      opacity: 0.8;
+      filter: alpha(opacity=80);
+      border-color: #eeeeee;
+      color: #eeeeee;
+    }
+    .btn-blue:hover, .btn-blue:focus, .btn-blue:active, .btn-blue.active, .open > .btn-blue.dropdown-toggle {
+      background-color: blue;
+      color: #dddddd;
+      border-color: #dddddd;
+    }
+    .btn-pink {
+      background-color: pink;
+      opacity: 0.8;
+      filter: alpha(opacity=80);
+      border-color: #888;
+      color: #888;
+    }
+    .btn-pink:hover, .btn-pink:focus, .btn-pink:active, .btn-pink.active, .open > .btn-pink.dropdown-toggle {
+      background-color: pink;
+      color: #777;
+      border-color: #777;
+    }
+  </style>
+{% endblock %}
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="hidden">
+      <h2>{{ title }}</h2>
+    </div>
+    <div class="crawl" align="center">
+      <h3>{{ message }}</h3>
+    </div>
+    <hr />
+    <span id="out">
+    </span>
+  </div>
+
+  {% if not output %}
+  <div class="hidden">
+  {% endif %}
+  <br />
+  <div class="container-fluid">
+    <div class="row">
+      <table class="table table-bordered" width="100%">
+        <thead>
+          <tr>
+            {% for hword in header %}
+              <th>{{ hword }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        {% for row in output %}
+          <tr>
+            {% for word in row %}
+              {% if loop.first %}
+                <th>{{ word }}</th>
+              {% else %}
+                <td>{{ word }}</td>
+              {% endif %}
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </table>
+      <br />
+      <hr />
+    </div>
+  </div>
+  {% if not output %}
+  <br />
+  </div>
+  {% endif %}
+
+  <div class="row">
+    <h3>Initial analysis functions.</h3>
+    <div class="col-sm-6">
+      <h4>Extract the words from a data file and download the word lists as a csv file:</h4>
+      <form action="/research" method="POST" class="form-inline" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="dataFile" class="sr-only">File input</label>
+          <input type="file" id="dataFile" name="dataFile">
+        </div>
+        <br />
+        <br />
+        <button class="btn btn-lg btn-default" name="wordsFromFile" id="wordsFromFile" type="submit">Get these words</button>
+      </form>
+    </div>
+
+    <div class="col-sm-6">
+      <h4>Analyze a word list file and download the matrices as a csv file:</h4>
+      <form action="/research" method="POST" class="form-inline" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="dataFile" class="sr-only">File input</label>
+          <input type="file" id="dataFile" name="dataFile">
+        </div>
+        <br />
+        <br />
+        <button class="btn btn-lg btn-default" name="analyzeWordsFile" id="analyzeWordsFile" type="submit">Analyze these words</button>
+      </form>
+    </div>
+  </div>
+
+  <hr />
+
+  <div class="row">
+    <h3>Adjust creativity parameters.</h3>
+    <div class="col-sm-6">
+      <h4>Get creativity threshold.</h4>
+      <form action="/research" method="POST" class="form-horizontal">
+        <button class="btn btn-lg btn-default" name="getCreatThresh" id="getCreatThresh" type="submit">Get threshold</button>
+      </form>
+    </div>
+    <div class="col-sm-6">
+      <form action="/research" method="POST" class="form-horizontal">
+        <div class="form-group">
+          <h4>Set creativity threshold.</h4>
+          <input type="text" class="form-control" name="newCreatThresh" id="newCreatThresh" placeholder="New threshold">
+        </div>
+        <div class="form-group">
+          <button class="btn btn-lg btn-default" name="setCreatThresh" id="newCreatThresh" type="submit">Set threshold</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <hr />
+
+  <div class="row">
+    <h3>Word analysis functions.</h3>
+    <div class="col-sm-6">
+      <h4>Analyze the drama words:</h4>
+      <form action="/research" method="POST" class="form-horizontal">
+        <button class="btn btn-lg btn-default" name="analyzeDrama" id="analyzeDrama" type="submit">Analyze drama words</button>
+      </form>
+    </div>
+
+    <div class="col-sm-6">
+      <h4>Analyze the field words:</h4>
+      <form action="/research" method="POST" class="form-horizontal">
+        <button class="btn btn-lg btn-default" name="analyzeField" id="analyzeField" type="submit">Analyze field words</button>
+      </form>
+    </div>
+
+  </div>
+
+  <hr />
+
+  <div class="row">
+    <h3>Model comparison functions.</h3>
+    <div class="col-sm-6">
+      <h4>Analyze words from file using the currently loaded construct & save results as a csv file.</h4>
+      <form action="/research" method="POST" class="form-inline" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="dataFile" class="sr-only">File input</label>
+            <input type="file" id="dataFile" name="dataFile">
+          </div>
+          <br />
+          <br />
+          <button class="btn btn-lg btn-default" name="battleFile" id="battleFile" type="submit">Model battle & save</button>
+      </form>
+    </div>
+  </div>
+
+  <hr />
+
+  <div class="row">
+    <h3>Development (offline) model comparison functions.</h3>
+    <form action="/research" method="POST" class="form-horizontal">
+      <div class="col-lg-4 col-sm-4 col-12">
+        <div class="form-group">
+          <h4>Analyze words from drama participants using the currently loaded construct & save results as a csv file.</h4>
+          <button class="btn btn-lg btn-default" name="battleDramaSave" id="battleDramaSave" type="submit">Drama battle & save</button>
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-sm-4 col-sm-offset-2 col-12">
+        <div class="form-group">
+          <h4>Analyze words from field participants using the currently loaded construct & save results as a csv file.</h4>
+          <button class="btn btn-lg btn-default" name="battleFieldSave" id="battleFieldSave" type="submit">Field battle & save</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="row">
+    <h3>Test functions.</h3>
+    <form action="/research" method="POST" class="form-horizontal">
+      <div class="col-lg-2 col-sm-2 col-12">
+        <div class="form-group">
+          <button class="btn btn-lg btn-blue" name="getWords" id="getWords" type="submit">Get words</button>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="saveData"> Save data as csv
+              </label>
+            </div>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-sm-2 col-12">
+        <div class="form-group">
+          <button class="btn btn-lg btn-green" name="listFiles" id="listFiles" type="submit">List csv files</button>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-sm-2 col-12">
+        <div class="form-group">
+          <button class="btn btn-lg btn-warning" name="battleDrama" id="battleDrama" type="submit">Drama battle</button>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-sm-2 col-12">
+        <div class="form-group">
+          <button class="btn btn-lg btn-green" name="battleField" id="battleField" type="submit">Field battle</button>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-sm-2 col-12">
+        <div class="form-group">
+          <button class="btn btn-lg btn-pink" name="resetPage" id="resetPage" type="submit">Reset page</button>
+        </div>
+      </div>
+
+      <br />
+    </form>
+  </div>
+
+  <hr />
+
+  <div class="row">
+    <div class="col-sm-12">
+      <h4>Upload a csv data file & download the results as a csv file:</h4>
+      <form action="/research" method="POST" class="form-inline" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="inputFile" class="sr-only">File input</label>
+          <input type="file" id="inputFile" name="inputFile">
+        </div>
+        <br />
+        <br />
+        <button class="btn btn-lg btn-default" name="upload" id="upload" type="submit">Analyze file</button>
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

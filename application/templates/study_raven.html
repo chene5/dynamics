@@ -1,0 +1,540 @@
+{% extends "layout-study.html" %}
+
+{% block headstyles %}{% endblock %}
+{% block headscripts %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+      <h3>For each of the following images, please select the figure that best fits in the blank area.</h3>
+    </div>
+  </div>
+  <hr />
+  <br />
+
+  <form action="/questions" method="POST" class="form-horizontal">
+    <div class="row">
+      <div class="col-sm-4">
+        <img src="static/assets/tasks/raven/raven_a5wa.png" alt="A5" width="100%">
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_1" id="raven_1_1" value="1" required>
+            Figure 1
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_1" id="raven_1_2" value="2">
+            Figure 2
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_1" id="raven_1_3" value="3">
+            Figure 3
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_1" id="raven_1_4" value="4">
+            Figure 4
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_1" id="raven_1_5" value="5">
+            Figure 5
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_1" id="raven_1_6" value="6">
+            Figure 6
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <div class="row">
+      <div class="col-sm-6">
+        <hr />
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-4">
+        <img src="static/assets/tasks/raven/raven_a7wa.png" alt="A7" width="100%">
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_2" id="raven_2_1" value="1" required>
+            Figure 1
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_2" id="raven_2_2" value="2">
+            Figure 2
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_2" id="raven_2_3" value="3">
+            Figure 3
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_2" id="raven_2_4" value="4">
+            Figure 4
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_2" id="raven_2_5" value="5">
+            Figure 5
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_2" id="raven_2_6" value="6">
+            Figure 6
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <div class="row">
+      <div class="col-sm-6">
+        <hr />
+      </div>
+    </div>
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-4">
+        <img src="static/assets/tasks/raven/raven_b5wa.png" alt="B5" width="100%">
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_3" id="raven_3_1" value="1" required>
+            Figure 1
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_3" id="raven_3_2" value="2">
+            Figure 2
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_3" id="raven_3_3" value="3">
+            Figure 3
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_3" id="raven_3_4" value="4">
+            Figure 4
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_3" id="raven_3_5" value="5">
+            Figure 5
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_3" id="raven_3_6" value="6">
+            Figure 6
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <div class="row">
+      <div class="col-sm-6">
+        <hr />
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-4">
+        <img src="static/assets/tasks/raven/raven_b7wa.png" alt="B7" width="100%">
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_4" id="raven_4_1" value="1" required>
+            Figure 1
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_4" id="raven_4_2" value="2">
+            Figure 2
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_4" id="raven_4_3" value="3">
+            Figure 3
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_4" id="raven_4_4" value="4">
+            Figure 4
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_4" id="raven_4_5" value="5">
+            Figure 5
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_4" id="raven_4_6" value="6">
+            Figure 6
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <div class="row">
+      <div class="col-sm-6">
+        <hr />
+      </div>
+    </div>
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-4">
+        <img src="static/assets/tasks/raven/raven_c5wa.png" alt="C5" width="100%">
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_5" id="raven_5_1" value="1" required>
+            Fig. 1
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_5" id="raven_5_2" value="2">
+            Fig. 2
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_5" id="raven_5_3" value="3">
+            Fig. 3
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_5" id="raven_5_4" value="4">
+            Fig. 4
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_5" id="raven_5_5" value="5">
+            Fig. 5
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_5" id="raven_5_6" value="6">
+            Fig. 6
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_5" id="raven_5_5" value="7">
+            Fig. 7
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_5" id="raven_5_6" value="8">
+            Fig. 8
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <br />
+    <div class="row">
+      <div class="col-sm-6">
+        <hr />
+      </div>
+    </div>
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-4">
+        <img src="static/assets/tasks/raven/raven_c7wa.png" alt="C7" width="100%">
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_6" id="raven_6_1" value="1" required>
+            Fig. 1
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_6" id="raven_6_2" value="2">
+            Fig. 2
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_6" id="raven_6_3" value="3">
+            Fig. 3
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_6" id="raven_6_4" value="4">
+            Fig. 4
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row">
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_6" id="raven_6_5" value="5">
+            Fig. 5
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_6" id="raven_6_6" value="6">
+            Fig. 6
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_6" id="raven_6_7" value="7">
+            Fig. 7
+          </label>
+        </div>
+      </div>
+
+      <div class="col-sm-1">
+        <div class="radio">
+          <label>
+            <input type="radio" name="raven_6" id="raven_6_8" value="8">
+            Fig. 8
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <br />
+    <br />
+    <hr />
+    <br />
+
+    <div class="row">
+      <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-2">
+          <button class="btn btn-default" name="continueBtn" id="continueBtn" type="submit">Continue</button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+
+  <br />
+
+  <div class="row" align="center" id="message">
+    {% for message in bottle %}
+      {% if loop.first %}
+        <hr />
+      {% endif %}
+      <h3>{{ message }}</h3>
+      {% if loop.last %}
+        <hr />
+      {% endif %}
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

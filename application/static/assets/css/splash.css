@@ -1,0 +1,85 @@
+.section-features .card{
+    width: 100%;
+    min-height: 390px;
+    padding: 10px 30px;
+    border: 1px solid #DDDDDD;
+    border-radius: 10px;
+    margin-top: 30px;
+    text-align: center;
+}
+.section-features .card .icon i{
+    font-size: 63px;
+    color: #9a9a9a;
+    width: 85px;
+    height: 85px;
+    line-height: 80px;
+    text-align: center;
+    border-radius: 50%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+.section-features .card.card-blue{ 
+  border-color: #CCE7F5;
+}
+.section-features .card.card-blue .icon i{
+  color:#00bbff;
+}
+.section-features .card.card-green{
+  border-color: #BDF8C0;
+}
+.section-features .card.card-green .icon i{
+  color:#3ABE41;
+}
+.section-features .card.card-orange{ 
+  border-color: #FAD9CD;
+}
+.section-features .card.card-orange .icon i{
+  color:#ff967f;
+}
+ .section-features .card.card-red{ 
+  border-color: #FFBFC3;
+}
+.section-features .card.card-red .icon i{
+  color:#E01724;
+}
+.section-features .card  h4{
+    font-weight: 300;
+    font-size: 18px;
+    margin: 30px 0 -15px;
+}
+
+.section-features .card  p{
+    font-size: 16px;
+    line-height: 22px;
+    color: #777;
+}
+
+.section .parallax, .section .full-image {
+/*
+width: 100%;
+height: 100vh;
+overflow: hidden;
+display: block;
+*/
+text-align: center;
+}
+
+.section .parallax > img, .section .full-image > img {
+/**/
+width: 100%;
+height: auto;
+position: relative;
+z-index: 1;
+/**
+width: 60%;
+left: 100%;
+top: -20%;
+margin-left: -200%;
+**/
+}
+
+.section-features {
+color: white;
+text-align: center;
+}
