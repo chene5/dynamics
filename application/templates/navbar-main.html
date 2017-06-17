@@ -36,7 +36,7 @@
                         {% if current_user.is_authenticated %}
                         <li><a href="{{ url_for('signout') }}">Sign out</a></li>
                         {% else %}
-                        <li><a href="{{ url_for('signin') }}">Sign in</a></li>
+                        <li><a href="{{ url_for('signin_page') }}">Sign in</a></li>
                         {% endif %}
                       </ul>
                     </li>

@@ -1,33 +1,37 @@
-{% extends "layout.html" %}
+{% extends "layout-simple.html" %}
 
 {% block headstyles %}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
   <div class="row">
-    <div class="page-title" align="center">
-      <h3>{{ title }}</h3>
+    <div class="col-sm-12" align="center">
+      <h1>What is Forward Flow?</h1>
     </div>
   </div>
 
   <div class="row">
-    <h4>Explore the technology that drives the Analysis Engine</h4>
-    <p>The Creativity Analysis Engine uses <a href="https://en.wikipedia.org/wiki/Latent_semantic_analysis" target="_blank">Latent Semantic Analysis.</a></p>
-    <p>It is written in Python, based on the <a href="https://radimrehurek.com/gensim/" target="_blank">gensim</a> library, and built on the <a href="http://flask.pocoo.org/" target="_blank">Flask</a> framework.</p>  </div>
-
-  <br />
-  <hr />
-  <br />
-
-  <div class="row">
-    <h4>Information about the currently loaded construct:</h4>
-    <div class="crawl">
-      <p>{{ message }}</p>
+    <div class="col-sm-8 col-sm-offset-2" align="center">
+      <h3>Measuring imagination with LSA</h3>
     </div>
   </div>
 
   <br />
+
+  <div class="row" align="center">
+    <img src="static/assets/img/lines.png" alt="Lines">
+  </div>
+
   <br />
-  <hr />
+  <hr>
+  
+  <div class="row">
+    <div class="col-sm-6 col-sm-offset-3" align="center">
+      <form action="/forward_flow">
+        <button class="btn btn-lg btn-default" type="submit">Try it out</button>
+      </form>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

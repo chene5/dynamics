@@ -1,0 +1,168 @@
+{% extends "layout-simple.html" %}
+
+{% block headstyles %}
+<style>
+.footer {
+    //text-align: right;
+    //visibility: hidden;
+}
+.btn-file {
+  position: relative;
+  overflow: hidden;
+}
+.btn-file input[type=file] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  font-size: 100px;
+  text-align: right;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  background: red;
+  cursor: inherit;
+  display: block;
+}
+input[readonly] {
+  background-color: white !important;
+  cursor: text !important;
+}
+</style>
+{% endblock %}
+
+{% block headscripts %}
+<noscript>Sorry: To work properly, this page requires JavaScript.</noscript>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="hidden">
+      <h1>{{ title }}</h1>
+    </div>
+    <span id="out">
+    </span>
+  </div>
+
+  {% if not message %}
+  <div class="hidden">
+  {% else %}
+  <div class="row">
+  {% endif %}
+    <div class="crawl" align="center">
+      <h1>{{ message }}</h1>
+    </div>
+  </div>
+
+  {% if not output %}
+  <div class="hidden">
+  {% endif %}
+  <br />
+  <div class="row">
+    <table class="table table-bordered" width="100%">
+      <thead>
+        <tr>
+          <th></th>
+          {% for hword in word_list %}
+            <th>{{ hword }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      {% for row in output %}
+        <tr>
+          {% for word in row %}
+            {% if loop.first %}
+              <th>{{ word }}</th>
+            {% else %}
+              <td>{{ word }}</td>
+            {% endif %}
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </table>
+  <hr />
+  </div>
+  {% if not output %}
+  </div>
+  {% endif %}
+
+  <br />
+
+  <div class="row">
+    <div class="col-lg-6 col-sm-6 col-12">
+      <form action="/query_data" method="POST" class="form-horizontal">
+        <div class="form-group">
+          <textarea type="text" class="thought-box" name="thought" id="thought" placeholder="Enter a list" rows="6" cols="75"></textarea>
+          <p class="help-block">Enter a list of words, separated by a comma and/or a new line.</p>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-lg btn-default" name="explore" id="explore" type="submit">Analyze list</button>
+        </div>
+      </form>
+    </div>
+  
+    <div class="col-lg-6 col-sm-6 col-12">
+      <p>Upload a file with a list of words & download the results as a csv file. Note that the analyzer expects a header in the file.</p>
+      <form action="/query_data" method="POST" class="form-inline" enctype="multipart/form-data">
+        <div class="input-group">
+            <span class="input-group-btn">
+              <span class="btn btn-primary btn-file">
+                Browse&hellip; <input id="input-1" type="file" class="btn btn-primary btn-file" name="filename">
+              </span>
+            </span>
+            <input type="text" class="form-control" placeholder="Select a file" readonly>
+        </div>
+        <br />
+        <br />
+        <button class="btn btn-lg btn-default" name="analyzeWordsFileBasic" id="analyzeWordsFileBasic" type="submit">Get flow matrices</button>
+        <button class="btn btn-lg btn-default" name="analyzeFileDist" id="analyzeFileDist" type="submit">Get distance matrices</button>
+        <br/>
+        <br/>
+        <button class="btn btn-lg btn-default" name="analyzeFileSummary" id="analyzeFileSummary" type="submit">Get flow summary</button>
+        <button class="btn btn-lg btn-default" name="analyzeFileSerial" id="analyzeFileSerial" type="submit">Get serial flow</button>
+      </form>
+    </div>
+
+  </div>
+
+  <hr>
+  <br />
+
+  <div class="row">
+    <div class="col-sm-6 col-sm-offset-3" align=center>
+      <form action="/team">
+        <button class="btn btn-lg btn-default" type="submit">Meet the team</button>
+      </form>
+    </div>
+  </div>
+
+
+</div>
+{% endblock %}
+
+{% block endscripts %}
+<script>
+$(document).on('change', '.btn-file :file', function() {
+  var input = $(this),
+      numFiles = input.get(0).files ? input.get(0).files.length : 1,
+      label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+  input.trigger('fileselect', [numFiles, label]);
+});
+
+$(document).ready( function() {
+    $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
+        
+        var input = $(this).parents('.input-group').find(':text'),
+            log = numFiles > 1 ? numFiles + ' files selected' : label;
+        
+        if( input.length ) {
+            input.val(log);
+        } else {
+            //if( log ) alert(log);
+        }
+        
+    });
+});
+</script>
+{% endblock %}

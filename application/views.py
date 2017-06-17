@@ -25,7 +25,7 @@ import processtweets
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 APP_STATIC = os.path.join(APP_ROOT, 'static')
 
-# FLOW_WORDS_LENGTH = 20
+FLOW_WORDS_LENGTH = 10
 
 FEEDBACK_PREFIX = "feedback"
 FULL_PROMPT_PREFIX = "full_prompt"
@@ -35,21 +35,235 @@ USER_HEADER = ['Username', 'User ID', 'rid', 'RISN', 'Condition', 'Role']
 
 
 @application.route('/index')
-@application.route('/home')
 def index():
     return redirect('/')
 
 
 @application.route('/')
+@application.route('/home')
 def home():
     """Renders the home page."""
-    msg_header, msg_text = get_daily_message()
     return render_template(
         'index.html',
         title='Home',
         username=get_username().title(),
+        year=datetime.now().year)
+
+
+@application.route('/about')
+def about():
+    """Renders the about page."""
+    return render_template(
+        'about.html',
+        username=get_username().title(),
+        title='About Forward Flow',
+        year=datetime.now().year
+    )
+
+
+@application.route('/forward_flow', methods=['GET', 'POST'])
+def forward_flow():
+    """Renders the Flow page."""
+    if not current_user.is_authenticated:
+        # Just create a new participant if the current user isn't logged in.
+        username = create_participant()
+        print 'flow(): New participant {} registered & logged in'.format(
+            username)
+    user_id = current_user.get_id()
+
+    if request.method == 'POST':
+        # This is for testing.
+        if 'continueBtn' in request.form:
+            studylib.save_answers(user_id)
+            # output = thoughtslib.save_word_list()
+            # print output
+            return redirect(url_for('graph'))
+
+    # Get a new seed word.
+    thoughtslib.get_set_seed_word(user_id)
+
+    output, old_word, user_words, word_count = thoughtslib.start_flow()
+
+    list_length = FLOW_WORDS_LENGTH
+    username = get_username()
+
+    return render_template(
+        'forward_flow.html',
+        title='Free associate',
         year=datetime.now().year,
-        message='Welcome!')
+        output=output,
+        old_word=old_word,
+        word_list=list(reversed(user_words[:-1])),
+        word_count=word_count,
+        list_length=list_length,
+        username=username.title()
+    )
+
+
+@application.route('/graph', methods=('GET', 'POST'))
+def graph():
+    """
+    Renders the graph page.
+    """
+    title = 'Thought Plot'
+    # header = None
+    if not current_user.is_authenticated:
+        # Just create a new participant if the current user isn't logged in.
+        username = create_participant()
+        print 'graph(): New participant {} registered & logged in'.format(
+            username)
+    user_id = current_user.get_id()
+    if request.method == 'POST':
+        if 'continueBtn' in request.form:
+            studylib.save_answers(user_id)
+
+    list_length = FLOW_WORDS_LENGTH
+
+    flow_and_words = studylib.get_flow_and_words(user_id, list_length)
+    flow_data = flow_and_words[0]
+    words = flow_and_words[1]
+    average = flow_and_words[2]
+    # print len(flow_data)
+    # print len(words)
+    if average:
+        message = "Forward Flow: " + str(round(average,3))
+    else:
+        message = "Please enter more words"
+    return render_template(
+        'graph.html',
+        year=datetime.now().year,
+        username=get_username().title(),
+        title=title,
+        message=message,
+        flow_data=flow_data,
+        average=average,
+        words=words)
+
+
+@application.route('/query_data', methods=['GET', 'POST'])
+def query_data():
+    """
+    Renders the query data page, which has extra functionality
+    for querying lists.
+    """
+    if request.method == 'POST':
+        if 'download' in request.form:
+            word_list, output = thoughtslib.construct_do_list()
+            csv_str = make_csv_str(word_list, output)
+            # print 'csv_str:', csv_str
+            response = make_response(csv_str)
+            curr_time = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+            filename = 'results_' + curr_time + '.csv'
+            # print 'filename:', filename
+            response.headers["Content-Disposition"] = \
+                "attachment; filename=" + filename
+            response.mimetype = 'text/csv'
+            return response
+        elif 'explore' in request.form:
+            # word_list, table, average = thoughtslib.construct_do_list()
+            word_list, table, average = studylib.analyze_form_word_list()
+            try:
+                average = round(average, 3)
+            except TypeError:
+                average = None
+            except:
+                raise
+            message = 'Forward Flow: ' + str(average)
+            # Display the results on the page.
+            return render_template(
+                'query_data.html',
+                year=datetime.now().year,
+                username=get_username().title(),
+                title='Analyze data',
+                message=message,
+                word_list=word_list,
+                output=table
+            )
+        elif 'analyzeWordsFileBasic' in request.form:
+            # print "Analysis file sent"
+            return researchlib.do_research()
+        elif 'analyzeFileDist' in request.form:
+            # print "Analysis file sent"
+            return researchlib.do_research()
+        elif 'analyzeFileSummary' in request.form:
+            # print "Analysis file sent"
+            return researchlib.do_research()
+        elif 'analyzeFileSerial' in request.form:
+            # print "Analysis file sent"
+            return researchlib.do_research()
+        else:
+            # Unknown POST request..
+            return render_template(
+                'query_data.html',
+                year=datetime.now().year,
+                username=get_username().title(),
+                title='Analyze data',
+                message='Unknown request'
+            )
+    else:
+        return render_template(
+            'query_data.html',
+            year=datetime.now().year,
+            username=get_username().title(),
+            title='Analyze data',
+            message='Enter a list or upload a file',
+        )
+
+
+@application.route('/upload_data', methods=('GET', 'POST'))
+def upload_data():
+    # print 'upload()'
+    if request.method == 'GET':
+        return redirect('/query_data')
+    if not request.files:
+        return render_template(
+            'query_data.html',
+            year=datetime.now().year,
+            username=get_username().title(),
+            title='Analyze data',
+            message='No file was uploaded',
+        )
+
+    for infilename, infile in request.files.iteritems():
+        if not infile:
+            return render_template(
+                'query_data.html',
+                year=datetime.now().year,
+                username=get_username().title(),
+                title='Analyze data',
+                message='No file was uploaded',
+                )
+
+    file_contents = infile.stream.read().decode("utf-8")
+    # print 'file_contents:', file_contents
+
+    word_list, output = thoughtslib.construct_do_list(file_contents)
+    # print 'output:', output
+    csv_str = make_csv_str(word_list, output)
+    # print 'csv_str:', csv_str
+    response = make_response(csv_str)
+    curr_time = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    filename = 'results_' + curr_time + '.csv'
+    # print 'filename:', filename
+    response.headers["Content-Disposition"] = "attachment; filename=" + \
+        filename
+    response.mimetype = 'text/csv'
+
+    return response
+
+
+@application.route('/team')
+def team():
+    """Renders the about page."""
+    message = get_about_message()
+
+    return render_template(
+        'team.html',
+        username=get_username().title(),
+        title='Under the hood',
+        year=datetime.now().year,
+        message=message
+    )
 
 
 @application.route('/admin', methods=('GET', 'POST'))
@@ -294,7 +508,7 @@ def irb():
         title='Consent',
         year=datetime.now().year,
         username=username.title(),
-        seed_word=studylib.get_seed_word()
+        seed_word=thoughtslib.get_seed_word()
     )
 
 
@@ -316,7 +530,7 @@ def intro():
         title='Introduction',
         year=datetime.now().year,
         username=username.title(),
-        seed_word=studylib.get_seed_word(user_id)
+        seed_word=thoughtslib.get_seed_word(user_id)
     )
 
 
@@ -333,7 +547,7 @@ def flow():
         # This is for testing.
         if 'continueBtn' in request.form:
             output = thoughtslib.save_word_list()
-            print output
+            # print output
             return redirect(url_for('uses'))
 
     output, old_word, user_words, word_count = thoughtslib.start_flow()
@@ -868,20 +1082,6 @@ def get_about_message():
     return message
 
 
-@application.route('/about')
-def about():
-    """Renders the about page."""
-    message = get_about_message()
-
-    return render_template(
-        'about.html',
-        username=get_username().title(),
-        title='Under the hood',
-        year=datetime.now().year,
-        message=message
-    )
-
-
 @application.route('/contact')
 def contact():
     """Renders the contact page."""
@@ -949,10 +1149,16 @@ def load():
     """
     Renders the load page, which allows users to load a new construct.
     """
+    # constructs_dict = thoughtslib.display_constructs()
+    constructs_dict = thoughtslib.CONSTRUCTS_INFO
+    output = []
+    for construct_num, construct_info in constructs_dict.iteritems():
+        output.append(construct_info)
+
     if 'construct' in request.args:
         construct_name = request.args.get('construct')
         # print 'New construct requested:', construct_name
-        if construct_name != '':
+        if construct_name:
             thoughtslib.load_construct(construct_name)
             message = get_about_message()
             return render_template(
@@ -960,19 +1166,18 @@ def load():
                 year=datetime.now().year,
                 username=get_username().title(),
                 title='New construct loaded',
-                message=message,
+                output=output,
+                message=message
             )
     else:
-        constructs_dict = thoughtslib.display_constructs()
-        output = []
-        for construct_num, construct_info in constructs_dict.iteritems():
-            output.append(construct_info)
+        message = get_about_message()
         return render_template(
             'load.html',
             year=datetime.now().year,
             username=get_username().title(),
             title='Load a new construct',
-            output=output
+            output=output,
+            message=message
         )
 
 
@@ -1171,7 +1376,6 @@ def clean_bow_word(word):
 
 
 def get_username():
-    return current_user.username
     """
     if current_user.is_authenticated:
         return current_user.username
@@ -1186,6 +1390,7 @@ def get_username():
         username = 'Guest'
     return username
     """
+    return current_user.username
 
 
 def get_day():
@@ -1284,17 +1489,6 @@ def research():
         elif 'analyzeWordsFile' in request.form:
             # print "Analysis file sent"
             return researchlib.do_research()
-        elif 'battleDramaSave' in request.form:
-            # print "Battle drama & save"
-            # return redirect('/research')
-            return researchlib.do_research()
-        elif 'battleFieldSave' in request.form:
-            # print "Battle field & save"
-            # return redirect('/research')
-            return researchlib.do_research()
-        elif 'battleFile' in request.form:
-            # print "Battle & save"
-            return researchlib.do_research()
         else:
             message, output = researchlib.do_research()
             header = output[0]
@@ -1356,8 +1550,26 @@ def visualize():
         message=message)
 
 
+@application.route('/flow_api/<word_list>')
+def flow_api(word_list):
+    words = word_list.strip().split(',')
+    sim_matrix, word_list = studylib.calculate_all_past(words,
+                                                        include_none=True,
+                                                        distance=True)
+    flow_list_str = thoughtslib.matrix_to_str([sim_matrix])
+    flow_list_str = flow_list_str.rstrip(';')
+    return flow_list_str
+
+
+@application.route('/flow_api/')
+@application.route('/flow_api')
+def flow_api_none():
+    return "NA"
+
+
 @application.route('/signin', methods=['GET', 'POST'])
-def signin():
+@application.route('/signin_page', methods=['GET', 'POST'])
+def signin_page():
     form = LoginForm()
     if form.validate_on_submit():
         print 'Login attempt by {}'.format(form.username.data)
@@ -1453,7 +1665,7 @@ def page_not_found(error):
                            username=get_username().title(),
                            title="Sorry!",
                            message="The requested page couldn't be found.",
-                           cover='static/assets/img/mountains.jpg'), \
+                           cover='/static/assets/img/mountains.jpg'), \
                                404
 
 
@@ -1486,7 +1698,7 @@ def associate():
         # This is for testing.
         if 'submitWords' in request.form:
             output = thoughtslib.flow_step()
-            print output
+            # print output
             return redirect('/')
 
     output, old_word, user_words, word_count = thoughtslib.start_flow()
@@ -1532,7 +1744,7 @@ def associate2():
         # This is for testing.
         if 'submitWords' in request.form:
             output = thoughtslib.flow_step()
-            print output
+            # print output
             return redirect('/')
 
     output, old_word, user_words, word_count = thoughtslib.start_flow()
@@ -1610,7 +1822,7 @@ def flow_dynamic():
         if 'submitWords' in request.form:
             # output = thoughtslib.word_saver()
             output = thoughtslib.flow_step()
-            print output
+            # print output
             return redirect('/uses')
 
     # output, old_word, user_words, word_count = thoughtslib.run_thoughts()

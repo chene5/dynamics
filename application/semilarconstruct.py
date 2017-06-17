@@ -239,6 +239,29 @@ class SemilarConstruct(ThoughtConstruct):
             return None
         return result
 
+    def query_pair_lsi_distance(self, text1, text2):
+        # Compute the semantic space position of the first word.
+        vec_lsi1 = self.query_lsi(text1)
+        # print text1, "semantic space vector:", vec_lsi1
+        # Compute the semantic space position of the second word.
+        vec_lsi2 = self.query_lsi(text2)
+        # print text2, "semantic space vector:", vec_lsi2
+        try:
+            # Compute the cosine distance
+            result = cosine(vec_lsi1, vec_lsi2) / 2
+        except ValueError:
+            # A ValueError: Probably one of the words wasn't in the dictionary.
+            logging.debug('Cosine similarity ValueError')
+            return None
+        except:
+            # Other exceptions.
+            # logging.exception('Cosine similarity unknown exception')
+            logging.debug('Cosine similarity unknown exception')
+            # XXX: Eventually need to figure out the possible exceptions.
+            # raise
+            return None
+        return result
+
     def get_sampled_avg(self, word, num=400):
         if num >= self.dictionary_len:
             return None

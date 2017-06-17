@@ -30,14 +30,14 @@ def compute_all_future_past(corr_data):
     try:
         all_total_avg = all_total / all_count
     except ZeroDivisionError:
-        all_total_avg = 0
+        all_total_avg = None
     try:
         future_total_avg = future_total / future_count
     except ZeroDivisionError:
-        future_total_avg = 0
+        future_total_avg = None
     try:
         past_total_avg = past_total / past_count
     except ZeroDivisionError:
-        past_total_avg = 0
+        past_total_avg = None
 
     return all_total_avg, future_total_avg, past_total_avg

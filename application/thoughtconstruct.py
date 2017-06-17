@@ -146,6 +146,34 @@ class ThoughtConstruct:
         # print(results_vector)
         return results_vector
 
+    def query_pair_lsi_distance(self, text1, text2):
+        # Compute the semantic space position of the first word.
+        vec_lsi1 = self.query_lsi(text1)
+        # Compute the semantic space position of the second word.
+        vec_lsi2 = self.query_lsi(text2)
+        try:
+            # Compute the cosine distance
+            result = cosine_distance(vec_lsi1, vec_lsi2)
+        except ValueError:
+            # A ValueError: Probably one of the words wasn't in the dictionary.
+            # logging.debug('Cosine similarity ValueError')
+            return None
+        except:
+            # Other exceptions.
+            # logging.exception('Cosine similarity unknown exception')
+            logging.debug('Cosine distance unknown exception')
+            # XXX: Eventually need to figure out the possible exceptions.
+            # raise
+            return None
+        return result
+
+    def query_list_distance(self, word_list):
+        # print 'word list:', word_list
+        results_matrix = [[self.query_pair_lsi_distance(word1, word2)
+                           for word1 in word_list] for word2 in word_list]
+        # print(results_matrix)
+        return results_matrix
+
     def get_closest(self, word, num=10, iterations=None):
         if word not in self.dictionary.values():
             return None
@@ -270,6 +298,26 @@ def cosine_sim(vec_lsi_1, vec_lsi_2):
     cosine_similarity = 1 - cosine(vector1, vector2)
 
     return cosine_similarity
+
+
+def cosine_distance(vec_lsi_1, vec_lsi_2):
+    vector1 = []
+    vector2 = []
+
+    # Create vector 1.
+    for coord in vec_lsi_1:
+        # print coord[1]
+        vector1.append(coord[1])
+
+    # Create vector 2.
+    for coord in vec_lsi_2:
+        # print coord[1]
+        vector2.append(coord[1])
+
+    # We're scaling the semantic distance to: 0 to 1.
+    flow = cosine(vector1, vector2) / 2
+
+    return flow
 
 
 def sim_origin(vec_lsi_1):

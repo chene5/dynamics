@@ -1,9 +1,4 @@
-{% extends "layout-study.html" %}
-
-{% block headstyles %}
-  <link href="static/assets/css/daisy.css" rel="stylesheet" />
-  <link href="static/assets/css/daisy-pres.css" rel="stylesheet"/>
-{% endblock %}
+{% extends "layout-simple.html" %}
 
 {% block content %}
 <div class="container">
@@ -11,7 +6,7 @@
       <h1>Please sign in</h1>
   </div>
   <div class="col-md-4">
-      <form method="POST" class="form-inline" action="/signin">
+      <form method="POST" class="form-inline" action="/signin_page">
         {{ form.hidden_tag() }}
         <p>{{ form.username.label }} {{ form.username(size=20) }}</p>
         <p>{{ form.password.label }} {{ form.password(size=20) }}</p>

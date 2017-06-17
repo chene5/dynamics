@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout-simple.html" %}
 
 {% block headstyles %}
 {% include "button-styles.html" %}
@@ -15,7 +15,6 @@
     <div class="crawl" align="center">
       <h3>{{ message }}</h3>
     </div>
-    <hr />
     <span id="out">
     </span>
   </div>
@@ -56,53 +55,25 @@
   {% endif %}
 
   <div class="row">
-    <div class="col-sm-6">
-      <h4>Research functions</h4>
-      <form action="/research">
-        <button class="btn btn-lg btn-default" type="submit">Research</button>
-      </form>
-    </div>
-
-    <div class="col-sm-6">
-      <h4>Extra functions</h4>
-      <form action="/extras">
-        <button class="btn btn-lg btn-default" type="submit">Extras</button>
-      </form>
+    <div class="col-sm-12" align="center">
+      <h1>Forward Flow: A Measure of Creative Imagination</h1>
     </div>
   </div>
 
-  <hr />
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2" align="center">
+      <p>How do you measure imagination?  And are some imaginations more creative than others?</p>
+      <p>We developed the measure of forward flow to capture imagination.  You can <a href="/about">learn more about it here</a>, see your own <a href="/forward_flow">forward flow</a>, or <a href="/query_data">upload a file</a> to get the forward flow of many people.</p>
+	  <h2>Forward flow predicts creativity.</h2>
+    </div>
+  </div>
+
+  <br />
 
   <div class="row">
-    <div class="col-sm-6">
-      <h4>About the LSA construct</h4>
+    <div class="col-sm-6 col-sm-offset-3" align="center">
       <form action="/about">
-        <button class="btn btn-lg btn-green" type="submit">About</button>
-      </form>
-    </div>
-
-    <div class="col-sm-6">
-      <h4>Load LSA constructs</h4>
-      <form action="/load">
-        <button class="btn btn-lg btn-green" type="submit">Constructs</button>
-      </form>
-    </div>
-  </div>
-
-  <hr />
-
-  <div class="row">
-    <div class="col-sm-6">
-      <h4>List query functions</h4>
-      <form action="/query">
-        <button class="btn btn-lg btn-pink" type="submit">List query</button>
-      </form>
-    </div>
-
-    <div class="col-sm-6">
-      <h4>Admin functions</h4>
-      <form action="/admin">
-        <button class="btn btn-lg btn-pink" type="submit">Admin</button>
+        <button class="btn btn-lg btn-default" type="submit">Learn more</button>
       </form>
     </div>
   </div>

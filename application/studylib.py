@@ -18,15 +18,11 @@ from application import db
 from models import Answer, Sequence, User
 
 from utilslib import make_anon_id
-from thoughtslib import WORD_MAX_COUNT
+import thoughtslib
+# import WORD_MAX_COUNT, query_pair, get_sequence, save_word_list
 
-# Participants will first see one of these words.
-SEED_WORDS = set(['toaster',
-                  'table',
-                  'bear',
-                  'snow',
-                  'paper',
-                  'candle'])
+# XXX: Old: The maximum number of words we'll save at a time.
+# FLOW_WORDS_MAX = 23
 
 RACES = OrderedDict()
 RACES['AI_AN'] = 'American Indian/Alaskan Native'
@@ -107,7 +103,7 @@ def save_answers(user_id):
         if question.startswith('word'):
             if not flow_word_list:
                 # Iterate through the entire form sequentially.
-                for i in range(1, WORD_MAX_COUNT + 1):
+                for i in range(1, thoughtslib.WORD_MAX_COUNT + 1):
                     entry_name = 'word' + str(i)
                     # print "Reading entry:", entry_name
                     if entry_name in request.form:
@@ -252,7 +248,7 @@ def save_answers(user_id):
         # print
 
     if flow_word_list:
-        save_word_list(flow_word_list)
+        thoughtslib.save_word_list(flow_word_list)
 
     if race:
         entry.race = dumps(race)
@@ -474,7 +470,7 @@ def get_all_data(last_count=None):
     Returns: header.
              all_data
     """
-    print "get_all_data"
+    # print "get_all_data"
     all_data = []
     # sequence = Sequence.query.filter_by(user_id=user_id). \
     #     order_by(Sequence.id.desc()).first()
@@ -488,64 +484,140 @@ def get_all_data(last_count=None):
     return ALL_DATA_HEADER, all_data
 
 
-def start_flow():
-    """Start forward flow recording."""
-    # print 'start_flow()'
-    if current_user.is_authenticated:
-        user_id = current_user.get_id()
-    else:
-        user_id = make_anon_id()
-
-    user_sequence = get_sequence(user_id)
-    user_words = loads(user_sequence.body)
-    # Don't count the seed word.
-    word_count = len(user_words) - 1
-    last_word = user_words[-1]
-    # print "Word count:", word_count
-    # print "start_flow(): User words:", user_words
-    if word_count == 0:
-        output = Markup("<p>Starting word: </p> <p>{}</p>".format(last_word))
-    else:
-        # output = Markup("<p>Previous word </p> <p>{}</p>".format(last_word))
-        output = Markup("<p>Your last word was: </p> <p>{}</p>".format(
-            last_word))
-
-    return output, last_word, user_words, word_count
-
-
-def get_sequence(user_id):
+def get_flow_and_words(user_id, length=thoughtslib.WORD_MAX_COUNT):
+    user_sequence = thoughtslib.get_sequence(user_id)
+    sequence = loads(user_sequence.body)
     """
-    Get this user's sequence from the database.
-    If no sequence exists, create one.
+    sequence_str = user_sequence.body
+    sequence_str = sequence_str.strip('[]')
+    sequence_str = sequence_str.strip('"')
+    sequence = sequence_str.split('", "')
     """
-    sequence = Sequence.query.filter_by(user_id=user_id).first()
-    if not sequence:
-        user_sequence = [get_seed_word()]
-        sequence = setup_db_sequence(user_sequence, user_id)
-        # print "Created new sequence for", user_id, ":", user_sequence
-    return sequence
+    # print sequence
+    # print sequence[-1]
+    seq_len = len(sequence)
+    if seq_len < length:
+        length = seq_len
+    sequence = sequence[-length:]
+    # print sequence
+    flow_list, word_list = calculate_all_past(sequence, include_none=False,
+                                              distance=True)
+    # flow_list, word_list = calculate_all_ff(sequence, include_none=False)
+    try:
+        average = sum(flow_list)/len(flow_list)
+    except ZeroDivisionError:
+        average = None
+    flow_and_words = (flow_list, clean_word_list(word_list), average)
+    return flow_and_words
 
 
-def setup_db_sequence(user_words, user_id):
-    sequence = Sequence(body=dumps(user_words),
-                        data='',
-                        user_id=user_id,
-                        user=current_user._get_current_object(),
-                        timestamp=datetime.utcnow())
-    db.session.add(sequence)
-    db.session.commit()
-    set_sequence_id(sequence.id)
-    return sequence
+def calculate_all_ff(word_list, include_none=True):
+    flow_list = []
+    new_word_list = []
+    flow = None
+    for i in range(0, len(word_list)-1):
+        flow = thoughtslib.query_pair(word_list[i], word_list[i+1])
+        if include_none:
+            flow_list.append(flow)
+        else:
+            if flow:
+                flow_list.append(flow)
+                new_word_list.append(word_list[i])
+    if flow:
+        new_word_list.append(word_list[-1])
+    if include_none:
+        new_word_list = word_list
+    return flow_list, new_word_list
 
 
-def get_seed_word(user_id=None):
-    if user_id:
-        user_sequence = get_sequence(user_id)
-        user_words = loads(user_sequence.body)
-        seed_word = user_words[0]
-    else:
-        seed_word = sample(SEED_WORDS, 1)[0]
+def calculate_all_past(word_list, include_none=True, distance=True):
+    flow_list = []
+    new_word_list = []
+    # Flag indicating whether we've found the first word with valid similarity
+    found_first_word = False
+    for i in range(1, len(word_list)):
+        flow = calculate_word_past(word_list[i], word_list[:i],
+                                   distance=distance)
+        if include_none:
+            flow_list.append(flow)
+        else:
+            if flow:
+                # Check whether we need to add the first word of the pair.
+                if not found_first_word:
+                    new_word_list.append(word_list[i-1])
+                    found_first_word = True
+                flow_list.append(flow)
+                new_word_list.append(word_list[i])
+    if include_none:
+        new_word_list = word_list
+    return flow_list, new_word_list
+
+
+def calculate_word_past(word, other_words, distance=False):
+    past_total = 0.0
+    flow_count = 0
+    for past_word in other_words:
+        if distance:
+            this_flow = thoughtslib.query_pair_distance(word, past_word)
+        else:
+            this_flow = thoughtslib.query_pair(word, past_word)
+        if this_flow:
+            past_total += this_flow
+            flow_count += 1
+    try:
+        past_avg = past_total / flow_count
+    except ZeroDivisionError:
+        past_avg = None
+    return past_avg
+
+
+def clean_word_list(word_list):
+    return [clean_word(word) for word in word_list]
+
+
+def clean_word(word):
+    word = word.replace("'", "")
+    return word
+
+
+def get_flow_data(user_id, length=thoughtslib.WORD_MAX_COUNT):
+    flow_and_words = get_flow_and_words(user_id, length)
+    flow_list = flow_and_words[0]
+    return flow_list
+
+
+def analyze_form_word_list():
+    word_list = get_form_words()
+    matrix = thoughtslib.list_query_distance(word_list)
+    average = thoughtslib.calc_output_avg(matrix)
+    table = thoughtslib.format_pw(word_list, matrix)
+    return word_list, table, average
+
+
+def get_form_words():
+    final_word_list = []
+    if request.method == 'POST':
+        word_input = request.form['thought']
+        word_input = word_input.strip()
+        if word_input:
+            white_split = word_input.split()
+            for word_set in white_split:
+                word_set = word_set.strip()
+                # Get rid of leading or trailing ','
+                word_set = word_set.strip(',')
+                word_list = word_set.split(',')
+                for word in word_list:
+                    word = word.strip()
+                    if word:
+                        final_word_list.append(word)
+    return final_word_list
+
+
+"""
+def get_seed_word(user_id):
+    seed_word = sample(SEED_WORDS, 1)[0]
     return seed_word
+"""
 
 
 def set_sequence_id(sequence_id):
@@ -553,8 +625,9 @@ def set_sequence_id(sequence_id):
     # print session['sequence_id']
 
 
+"""
 def save_word_list(word_list):
-    """Save a list of words to the db."""
+    # Save a list of words to the db.
     if current_user.is_authenticated:
         user_id = current_user.get_id()
     else:
@@ -587,6 +660,7 @@ def save_word_list(word_list):
     # Update the database.
     db.session.add(sequence)
     db.session.commit()
+"""
 
 
 def get_flow_time(user, sequence):

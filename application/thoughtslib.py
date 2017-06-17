@@ -40,12 +40,7 @@ CONSTRUCTS_PATH = 'constructs/'
 _lemmatize = False
 
 # Participants will first see one of these words.
-SEED_WORDS = set(['toaster',
-                  'table',
-                  'bear',
-                  'snow',
-                  'paper',
-                  'candle'])
+SEED_WORDS = {'toaster', 'table', 'bear', 'snow', 'paper', 'candle'}
 
 THOUGHT_CONSTRUCTS = {}
 ABOUT_MESSAGES = {}
@@ -150,12 +145,14 @@ def load_about_message(construct_name):
     about_message += construct_path
     about_message += "\n"
 
+    """
     with open(construct_path + construct_name + '_corpora_log.txt') as \
             dict_file:
         about_message += "\n"
         about_message += "Construct LSA training log:\n"
         about_message += dict_file.read().decode('utf-8').encode('ascii',
                                                                  'replace')
+     """
 
     return about_message
 
@@ -212,6 +209,10 @@ def setup_constructs():
         construct_path = construct_info[1]
         # XXX: Hack to differentiate between different types of constructs.
         if construct_name.lower().startswith('tasa'):
+            new_construct = SemilarConstruct(construct_name,
+                                             construct_path,
+                                             load_zip=True)
+        elif construct_name.lower().startswith('TASA'):
             new_construct = SemilarConstruct(construct_name,
                                              construct_path,
                                              load_zip=True)
@@ -568,7 +569,7 @@ def save_word_data_to_db(word, duration, sequence):
     db.session.commit()
 
 
-def save_single_word(word, duration=-1, sequence=None):
+def save_single_word_with_sequence(word, duration=-1, sequence=None):
     """Save a single word to the db."""
     if not sequence:
         if current_user.is_authenticated:
@@ -595,10 +596,52 @@ def save_single_word(word, duration=-1, sequence=None):
 
     sequence.body = dumps(stored_words)
     # print sequence.body
+    sequence.timestamp = datetime.utcnow()
 
     # Update the database.
     db.session.add(sequence)
     db.session.commit()
+
+
+def save_single_word(word):
+    """Save a single word to the db."""
+    if current_user.is_authenticated:
+        user_id = current_user.get_id()
+    else:
+        user_id = make_anon_id()
+
+    # Get the user's sequence from the database.
+    # sequence = get_sequence(user_id)
+    sequence = Sequence.query.filter_by(user_id=user_id).\
+        order_by(Sequence.id.desc()).first()
+
+    if sequence:
+        # Update the word list in the db.
+        stored_words = loads(sequence.body)
+        # Append the word to any words already in the db.
+        stored_words.append(word)
+        sequence.body = dumps(stored_words)
+    else:
+        # Update the word list.
+        stored_words = [word]
+        # Save the words and get the new sequence.
+        sequence = setup_db_sequence(stored_words, user_id)
+
+    # Update the full data entry part.
+    # Since we're saving a whole list with no time information,
+    # set the duration to be -1.
+    if not sequence.data:
+        sequence.data = '[{},{}]'.format(word, -1)
+    else:
+        sequence.data += '[{},{}]'.format(word, -1)
+
+    sequence.timestamp = datetime.utcnow()
+
+    # Update the database.
+    db.session.add(sequence)
+    db.session.commit()
+
+
 
 
 def save_word_list(word_list):
@@ -718,6 +761,33 @@ def query_pair(word1, word2):
     """
 
     return similarity
+
+
+def query_pair_distance(word1, word2):
+    thought_construct = get_user_construct()
+    # Get the cosine distance between the LSI vectors of these two words.
+    distance = thought_construct.query_pair_lsi_distance(word1, word2)
+    return distance
+
+
+def list_query(word_list):
+    thought_construct = get_user_construct()
+    result = thought_construct.query_list(word_list)
+    return result
+
+
+def list_query_distance(word_list):
+    thought_construct = get_user_construct()
+    result = thought_construct.query_list_distance(word_list)
+    return result
+
+
+def matrix_to_str(matrix):
+    output_str = ""
+    for row in matrix:
+        output_str += ",".join(map(str, row))
+        output_str += ";"
+    return output_str
 
 
 def thought_processor():
@@ -994,7 +1064,7 @@ def word_saver():
     return dumps(return_val)
 
 
-def process_word_lists(words_file):
+def process_word_lists(words_file, get_distance=False):
     words_file_list = words_file.splitlines()
     thought_construct = get_user_construct()
     # header = words_file_list[0]
@@ -1013,7 +1083,10 @@ def process_word_lists(words_file):
         user_data['words'] = word_list
         all_word_list.append(word_list)
 
-        result = thought_construct.query_list(word_list)
+        if get_distance:
+            result = thought_construct.query_list_distance(word_list)
+        else:
+            result = thought_construct.query_list(word_list)
 
         text = format_pw(word_list, result)
         if text:
@@ -1066,7 +1139,7 @@ def construct_do_list(in_word_list=None):
     else:
         if request.method == 'GET':
             # print("Got a GET request!!", request.args)
-            text = "catastrophe"
+            text = "Unknown request"
     """Don't remember what this is for.
     output = dumps({'text': text,
                          'wordlist': ['empty', 'list'],
@@ -1083,6 +1156,40 @@ def construct_do_list(in_word_list=None):
     return word_list, text
 
 
+def analyze_word_list(word_list):
+    thought_construct = get_user_construct()
+    return thought_construct.query_list_distance(word_list)
+
+
+def calc_output_avg(matrix):
+    """Calculate average from results matrix. The matrix for hi, bye
+    looks like this:
+    [[u'hi', '1.0', '-0.458'], [u'bye', '-0.458', '1.0']]
+    """
+    total = 0.0
+    count = 0
+    for i in range(0, len(matrix)):
+        row = matrix[i]
+        for j in range(i+1, len(row)):
+            # Skip the entry for the comparison
+            # for the word with itself.
+            try:
+                total += row[j]
+            except TypeError:
+                continue
+            except:
+                raise
+            count += 1
+
+    try:
+        total_avg = total / count
+    except ZeroDivisionError:
+        total_avg = None
+    except:
+        raise
+    return total_avg
+
+
 def format_pw(word_list, result):
     """ Create formatted output to send to user. """
     # Start with a ' ' for the top row.
@@ -1092,10 +1199,12 @@ def format_pw(word_list, result):
     for row in result:
         output.append([word_list[word_index]])
         for similarity in row:
-            if similarity:
+            try:
                 output[out_index].append(str(round(similarity, 3)))
-            else:
+            except TypeError:
                 output[out_index].append('')
+            except:
+                raise
         word_index += 1
         out_index += 1
 
@@ -1205,4 +1314,10 @@ def get_seed_word(user_id=None):
         seed_word = user_words[0]
     else:
         seed_word = sample(SEED_WORDS, 1)[0]
+    return seed_word
+
+
+def get_set_seed_word(user_id):
+    seed_word = sample(SEED_WORDS, 1)[0]
+    save_single_word(seed_word)
     return seed_word

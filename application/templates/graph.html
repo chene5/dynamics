@@ -1,0 +1,97 @@
+{% extends "layout-simple.html" %}
+
+{% block headstyles %}
+{% include "button-styles.html" %}
+<style> /* set the CSS */
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+#graph {
+	height: 500px;
+	width: 960px;
+}
+</style>
+{% endblock %}
+
+{% block headscripts %}
+<script src="/static/assets/js/d3.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12" align="center">
+      <h1>Your Thought Plot</h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="crawl" align="center">
+      <h3>{{ message }}</h3>
+    </div>
+    <span id="out">
+    </span>
+  </div>
+
+  <br />
+
+  <div id="graph" class="aGraph"></div>
+
+	<script src="/static/assets/js/flow-graph.js"></script>
+  <script>
+  var flow_data = {{ flow_data }};
+  var words = [{% for word in words %}
+  					{% if not loop.last %}
+	  					"{{ word|escape() }}",
+	  				{% else %}
+	  					"{{ word|escape() }}"
+	  				{% endif %}
+	  			{% endfor %}];
+
+	// set the dimensions and margins of the graph
+	var margin = {top: 20, right: 20, bottom: 30, left: 80},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+	// append the svg object to the graph div
+	// appends a 'group' element to 'svg'
+	// moves the 'group' element to the top left margin
+	var svg = d3.select("#graph").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+	flow_graph(flow_data, words, margin);
+	</script>
+
+
+  <br />
+  <hr>
+  
+  <div class="row">
+    <div class="col-sm-6 col-sm-offset-3" align="center">
+      <form action="/query_data">
+        <button class="btn btn-lg btn-default" type="submit">Analyze data</button>
+      </form>
+    </div>
+  </div>
+
+  <br />
+
+  <div class="row">
+    <div class="col-sm-6 col-sm-offset-3" align="center">
+      <form action="/forward_flow">
+        <button class="btn btn-default" type="submit">Try it again</button>
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block endscripts %}{% endblock %}

@@ -199,22 +199,32 @@ def get_p_data():
 
 def get_total(in_list):
     total = 0.0
+    count = 0
     for thing in in_list:
         if thing:
             total += thing
+            count += 1
         else:
             continue
-    return total
+    if count == 0:
+        return None
+    else:
+        return total
 
 
 def get_abs_total(in_list):
     total = 0.0
+    count = 0
     for thing in in_list:
         if thing:
             total += abs(thing)
+            count += 1
         else:
             continue
-    return total
+    if count == 0:
+        return None
+    else:
+        return total
 
 
 def compute_all(result, word_list):
@@ -254,7 +264,7 @@ def compute_all(result, word_list):
                 # In the future we may want to handle this specially.
                 pass
             if sim_idx == word_idx:
-                if not sim:
+                if sim is None:
                     # There wasn't a word here, so mark it as N/A
                     n_a += 1
                 # The similarity of the word with itself. Don't count it.
@@ -273,6 +283,10 @@ def compute_all(result, word_list):
             """
         except ZeroDivisionError:
             all_avg = None
+        except TypeError:
+            all_avg = None
+        except:
+            raise
 
         # Calculate the average of the future.
         try:
@@ -281,12 +295,18 @@ def compute_all(result, word_list):
         except IndexError:
             future_row = None
         if future_row:
-            future_avg = get_total(future_row) / len(future_row)
-            weighted_total += get_abs_total(future_row)
+            try:
+                future_avg = get_total(future_row) / len(future_row)
+                weighted_total += get_abs_total(future_row)
+                # future_avg = get_total(future_row) / (count - 1 - word_idx)
+                # print "future row for word {}: {}".format(word_idx, future_row)
+                # print "future_avg", future_avg
+            except TypeError:
+                future_avg = None
+                # Don't increment weighted_total
+            except:
+                raise
             weighted_count += len(future_row)
-            # future_avg = get_total(future_row) / (count - 1 - word_idx)
-            # print "future row for word {}: {}".format(word_idx, future_row)
-            # print "future_avg", future_avg
         else:
             future_avg = None
 
@@ -294,13 +314,18 @@ def compute_all(result, word_list):
         past_row = row[:word_idx]
         # print "past_row for word_idx {}: {}".format(word_idx, past_row)
         if past_row:
-            past_avg = get_total(past_row) / len(past_row)
-            # past_avg = get_total(past_row) / word_idx
-            """
-            print "past row len {} for word {}: {}".format(
-                len(past_row), word_idx, past_row)
-            print "past_avg:", past_avg, "tot", get_total(past_row)
-            """
+            try:
+                past_avg = get_total(past_row) / len(past_row)
+                # past_avg = get_total(past_row) / word_idx
+                """
+                print "past row len {} for word {}: {}".format(
+                    len(past_row), word_idx, past_row)
+                print "past_avg:", past_avg, "tot", get_total(past_row)
+                """
+            except TypeError:
+                past_avg = None
+            except:
+                raise
         else:
             past_avg = None
 

@@ -35,53 +35,37 @@ def do_research():
         except:
             raise
         message = 'New creativity threshold is:', new_threshold
-    elif 'battleDrama' in request.form:
-        message = 'Results of the drama battle'
-        output = thoughtslib.run_model_battle(p_data_file='drama_short.csv',
-                                              prefix='drama_')
-        return message, output
-    elif 'battleField' in request.form:
-        message = 'Results of the field battle'
-        output = thoughtslib.run_model_battle(p_data_file='field_short.csv',
-                                              prefix='field_')
-        return message, output
-    elif 'battleFile' in request.form:
-        message = 'Results of the battle'
-        stream = get_file_contents()
-        if not stream:
-            return render_template(
-                'research.html',
-                year=datetime.now().year,
-                username=get_username(),
-                title="File upload failed",
-                message='No file analyzed',
-            )
-        output = thoughtslib.analyze_file_stream(stream,
-                                                 prefix='drama_')
-        response = gen_csv(word_list=None, input_list=output)
-        return response
-    elif 'battleDramaSave' in request.form:
-        message = 'Results of the drama battle'
-        output = thoughtslib.run_model_battle(p_data_file='drama_short.csv',
-                                              prefix='drama_')
-        response = gen_csv(word_list=None, input_list=output)
-        return response
-    elif 'battleFieldSave' in request.form:
-        message = 'Results of the field battle'
-        output = thoughtslib.run_model_battle(p_data_file='field_short.csv',
-                                              prefix='field_')
-        response = gen_csv(word_list=None, input_list=output)
-        return response
-    elif 'analyzeDrama' in request.form:
-        message = 'Matrices of Drama words'
-        output = process_word_list('drama_short_words.csv')
-        return message, output
-    elif 'analyzeField' in request.form:
-        message = 'Matrices of Drama words'
-        output = process_word_list('field_short_words.csv')
-        return message, output
     elif 'analyzeWordsFile' in request.form:
         response = process_word_list_file()
+        if response:
+            return response
+        else:
+            message = 'No file uploaded'
+    elif 'analyzeWordsFileBasic' in request.form:
+        response = process_word_list_file(add_header=True,
+                                          add_summary_stats=False)
+        if response:
+            return response
+        else:
+            message = 'No file uploaded'
+    elif 'analyzeFileDist' in request.form:
+        response = process_word_list_file(get_distance=True,
+                                          add_header=True,
+                                          add_summary_stats=False)
+        if response:
+            return response
+        else:
+            message = 'No file uploaded'
+    elif 'analyzeFileSummary' in request.form:
+        response = gen_summary_csv(get_distance=True,
+                                   add_header=True)
+        if response:
+            return response
+        else:
+            message = 'No file uploaded'
+    elif 'analyzeFileSerial' in request.form:
+        response = gen_serial_flow_csv(get_distance=True,
+                                       add_header=True)
         if response:
             return response
         else:
@@ -150,85 +134,15 @@ def process_word_list(words_file):
     return output
 
 
-def gen_all_user_data_list(all_user_data, all_computed_data):
-    # XXX: Need to fix this hard-coded header!!!
-    header = 'SN,,,,,,,,,,,,,,,,,,,,,,,ALL,FUTURE,PAST,N-1,N-2,N-3,NAs'
-    data_list = [header.split(',')]
-
-    try:
-        sorted_p_ids = sorted(all_user_data, key=int)
-    except ValueError:
-        sorted_p_ids = sorted(all_user_data)
-    for p_id in sorted_p_ids:
-        user_data = all_user_data[p_id]
-        computed_data = all_computed_data[p_id]
-        corr_data = computed_data['corr_data']
-        overall_data = computed_data['overall_data']
-
-        # print user_data
-
-        subheader = p_id
-        subheader += ',Document'
-        for word in user_data['words']:
-            subheader += ',' + word
-        # subheader += '\n'
-        data_list.append(subheader.split(','))
-
-        first_line = True
-        for word, results_line in zip(user_data['words'],
-                                      user_data['results']):
-            line = ',' + word
-            for result in results_line:
-                line += ','
-                if result:
-                    line += str(round(result, 3))
-                else:
-                    line += '.'
-            line += ','
-            try:
-                line += str(round(corr_data[word]['all'], 3))
-            except TypeError:
-                line += '.'
-            line += ','
-            try:
-                line += str(round(corr_data[word]['future'], 3))
-            except TypeError:
-                line += '.'
-            line += ','
-            try:
-                line += str(round(corr_data[word]['past'], 3))
-            except TypeError:
-                line += '.'
-            # line += '\n'
-            if first_line:
-                line += ','
-                line += str(overall_data['n_1'])
-                line += ','
-                line += str(overall_data['n_2'])
-                line += ','
-                line += str(overall_data['n_3'])
-                line += ','
-                line += str(overall_data['n_a'])
-                first_line = False
-            data_list.append(line.split(','))
-        # XXX: Need to fix this hard-coded header!!!
-        gap_line = ',,,,,,,,,,,,,,,,,,,,,,,{},{},{},{},,,'.format(
-            overall_data['all'],
-            overall_data['future'],
-            overall_data['past'],
-            overall_data['weighted'])
-        data_list.append(gap_line.split(','))
-
-    return data_list
-
-
-def process_word_list_file():
+def process_word_list_file(get_distance=False,
+                           add_header=True, add_summary_stats=True):
     """Process csv of word lists."""
     file_contents = get_file_contents()
     if not file_contents:
         return None
 
-    all_user_data = thoughtslib.process_word_lists(file_contents)
+    all_user_data = thoughtslib.process_word_lists(file_contents,
+                                                   get_distance=get_distance)
     all_computed_data = {}
     for user, data in all_user_data.iteritems():
         corr_data, overall_data = dataprocessor.compute_all(data['results'],
@@ -240,10 +154,261 @@ def process_word_list_file():
             {'corr_data': corr_data, 'overall_data': overall_data}
 
     # response = gen_data_file(all_user_data)
-    output = gen_all_user_data_list(all_user_data, all_computed_data)
-    response = gen_csv(word_list=None, input_list=output, prefix='matrices_')
+    output = gen_all_user_data_list(all_user_data, all_computed_data,
+                                    add_header=add_header,
+                                    add_summary_stats=add_summary_stats)
+    if get_distance:
+        prefix = 'distances_'
+    else:
+        prefix = 'matrices_'
+    response = gen_csv(word_list=None, input_list=output, prefix=prefix)
 
     return response
+
+
+def gen_all_user_data_list(all_user_data, all_computed_data,
+                           add_header=True, add_summary_stats=True):
+    data_list = []
+    if add_header:
+        # XXX: Need to fix this hard-coded header!!!
+        # header = 'SN,,,,,,,,,,,,,,,,,,,,,,,ALL,FUTURE,PAST,N-1,N-2,N-3,NAs'
+        # data_list.append([header.split(',')])
+        data_list.append([])
+    else:
+        data_list.append([])
+
+    try:
+        sorted_p_ids = sorted(all_user_data, key=int)
+    except ValueError:
+        sorted_p_ids = sorted(all_user_data)
+    except:
+        raise
+
+    for p_id in sorted_p_ids:
+        user_data = all_user_data[p_id]
+        computed_data = all_computed_data[p_id]
+        corr_data = computed_data['corr_data']
+        overall_data = computed_data['overall_data']
+
+        # print user_data
+
+        subheader = p_id
+        subheader += ','
+        for word in user_data['words']:
+            subheader += ',' + word
+        # subheader += '\n'
+        if add_header:
+            if add_summary_stats:
+                subheader += ',ALL,FUTURE,PAST,N-1,N-2,N-3,NAs'
+            else:
+                subheader += ',WORD COUNT,NAs'
+        data_list.append(subheader.split(','))
+
+        first_line = True
+        for word, results_line in zip(user_data['words'],
+                                      user_data['results']):
+            line = ',' + word
+            for result in results_line:
+                line += ','
+                if result == '':
+                    line += '.'
+                else:
+                    try:
+                        line += str(round(result, 3))
+                    except TypeError:
+                        line += '.'
+                    except:
+                        raise
+            if add_summary_stats:
+                line += ','
+                try:
+                    line += str(round(corr_data[word]['all'], 3))
+                except TypeError:
+                    line += '.'
+                line += ','
+                try:
+                    line += str(round(corr_data[word]['future'], 3))
+                except TypeError:
+                    line += '.'
+                line += ','
+                try:
+                    line += str(round(corr_data[word]['past'], 3))
+                except TypeError:
+                    line += '.'
+                # line += '\n'
+                if first_line:
+                    line += ','
+                    line += str(overall_data['n_1'])
+                    line += ','
+                    line += str(overall_data['n_2'])
+                    line += ','
+                    line += str(overall_data['n_3'])
+                    line += ','
+                    line += str(overall_data['n_a'])
+                    first_line = False
+            else:
+                if first_line:
+                    line += ','
+                    line += str(len(user_data['words']))
+                    line += ','
+                    line += str(overall_data['n_a'])
+                    first_line = False
+            data_list.append(line.split(','))
+        if add_summary_stats:
+            # XXX: Need to fix this hard-coded header!!!
+            """
+            gap_line = ',,,,,,,,,,,,,,,,,,,,,,,{},{},{},{},,,'.format(
+                overall_data['all'],
+                overall_data['future'],
+                overall_data['past'],
+                overall_data['weighted'])
+            """
+            gap_line = ',ALL:,{},,FUTURE:,{},,PAST:,{},,WEIGHTED:,{},,,'.format(
+                overall_data['all'],
+                overall_data['future'],
+                overall_data['past'],
+                overall_data['weighted'])
+            data_list.append(gap_line.split(','))
+        else:
+            data_list.append([])
+            data_list.append([])
+
+    return data_list
+
+
+def gen_summary_csv(get_distance=True, add_header=True):
+    """Process csv of word lists."""
+    file_contents = get_file_contents()
+    if not file_contents:
+        return None
+
+    all_user_data = thoughtslib.process_word_lists(file_contents,
+                                                   get_distance=get_distance)
+    all_computed_data = {}
+    for user, data in all_user_data.iteritems():
+        corr_data, overall_data = dataprocessor.compute_all(data['results'],
+                                                            data['words'])
+        # print 'user:', user
+        # print corr_data
+        # print overall_data
+        all_computed_data[user] = \
+            {'corr_data': corr_data, 'overall_data': overall_data}
+
+    # response = gen_data_file(all_user_data)
+    output = gen_summary_list(all_user_data, all_computed_data,
+                                  add_header=add_header)
+    response = gen_csv(word_list=None, input_list=output, prefix='summary_')
+
+    return response
+
+
+def gen_summary_list(all_user_data, all_computed_data,
+                         add_header=True):
+    data_list = []
+    if add_header:
+        header = ['P_ID', 'Flow', 'Word count', 'NAs']
+        data_list.append(header)
+    else:
+        data_list.append([])
+
+    try:
+        sorted_p_ids = sorted(all_user_data, key=int)
+    except ValueError:
+        sorted_p_ids = sorted(all_user_data)
+    except:
+        raise
+
+    for p_id in sorted_p_ids:
+        user_data = all_user_data[p_id]
+        computed_data = all_computed_data[p_id]
+        overall_data = computed_data['overall_data']
+
+        data_list.append([p_id,
+                          str(overall_data['past']),
+                          str(len(user_data['words'])),
+                          str(overall_data['n_a'])])
+
+        # New line between participants.
+        data_list.append([])
+
+    return data_list
+
+
+def gen_serial_flow_csv(get_distance=True, add_header=True):
+    """Process csv of word lists."""
+    file_contents = get_file_contents()
+    if not file_contents:
+        return None
+
+    all_user_data = thoughtslib.process_word_lists(file_contents,
+                                                   get_distance=get_distance)
+    all_computed_data = {}
+    for user, data in all_user_data.iteritems():
+        corr_data, overall_data = dataprocessor.compute_all(data['results'],
+                                                            data['words'])
+        # print 'user:', user
+        # print corr_data
+        # print overall_data
+        all_computed_data[user] = \
+            {'corr_data': corr_data, 'overall_data': overall_data}
+
+    # response = gen_data_file(all_user_data)
+    output = gen_serial_flow_list(all_user_data, all_computed_data,
+                                  add_header=add_header)
+    response = gen_csv(word_list=None, input_list=output, prefix='serial_flow_')
+
+    return response
+
+
+def gen_serial_flow_list(all_user_data, all_computed_data,
+                         add_header=True):
+    data_list = []
+    if add_header:
+        # XXX: Need to fix this hard-coded header!!!
+        # header = ['P_ID', 'Flow', 'NAs']
+        # data_list.append(header)
+        data_list.append([])
+    else:
+        data_list.append([])
+
+    try:
+        sorted_p_ids = sorted(all_user_data, key=int)
+    except ValueError:
+        sorted_p_ids = sorted(all_user_data)
+    except:
+        raise
+
+    for p_id in sorted_p_ids:
+        user_data = all_user_data[p_id]
+        computed_data = all_computed_data[p_id]
+        corr_data = computed_data['corr_data']
+        overall_data = computed_data['overall_data']
+
+        word_list = [p_id]
+        for word in user_data['words']:
+            word_list.append(word)
+        if add_header:
+            word_list.append('WORD COUNT')
+            word_list.append('NAs')
+        data_list.append(word_list)
+
+        flow_list = ['']
+        for word in user_data['words']:
+            try:
+                flow_list.append(str(round(corr_data[word]['past'], 3)))
+            except TypeError:
+                flow_list.append('.')
+            except:
+                raise
+        flow_list.append(str(len(user_data['words'])))
+        flow_list.append(str(overall_data['n_a']))
+        data_list.append(flow_list)
+
+        # New line between participants.
+        data_list.append([])
+        data_list.append([])
+
+    return data_list
 
 
 def gen_data_file(all_user_data):
@@ -358,9 +523,15 @@ def make_csv_str(word_list=None, input_list=None):
     # print 'input_list:', input_list
     if word_list:
         csv_str = ','
-        for word in word_list[-1]:
+        for word in word_list[:-1]:
             csv_str += word + ','
-        csv_str += word_list[-1]
+        # Now add the last item in the list.
+        try:
+            csv_str += word_list[-1]
+        except IndexError:
+            pass
+        except:
+            raise
         csv_str += '\n'
     else:
         csv_str = ''
@@ -370,6 +541,12 @@ def make_csv_str(word_list=None, input_list=None):
             if item == '\n':
                 continue
             csv_str += str(item) + ','
-        csv_str += row[-1]
+        # Now add the last item in the list.
+        try:
+            csv_str += row[-1]
+        except IndexError:
+            pass
+        except:
+            raise
         csv_str += '\n'
     return csv_str
