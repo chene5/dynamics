@@ -1,5 +1,7 @@
 .idea/
 
+*.bak
+
 log_*.*
 
 # Byte-compiled / optimized / DLL files
