@@ -1486,6 +1486,8 @@ def research():
             return researchlib.do_research()
         elif 'processTweets' in request.form:
             return processtweets.process_this_dir()
+        elif 'getTweetMatrices' in request.form:
+            return processtweets.get_matrices_from_dir()
         elif 'analyzeWordsFile' in request.form:
             # print "Analysis file sent"
             return researchlib.do_research()
@@ -1873,7 +1875,6 @@ def save_words():
 
 @application.route('/do_tweets', methods=['GET', 'POST'])
 def do_tweets():
-    # print 'save_words()'
     output = processtweets.process_this_dir()
     return output
 
