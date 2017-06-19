@@ -116,10 +116,46 @@ def analyze_file(file_stream=False, return_csv=True):
     return response
 
 
+def analyze_word_lists(word_lists, user_list=None, get_distance=False):
+    """Process word lists."""
+    all_user_data = thoughtslib.process_word_lists(word_lists,
+                                                   user_list=user_list,
+                                                   get_distance=get_distance)
+
+    all_computed_data = {}
+    for user, data in all_user_data.iteritems():
+        corr_data, overall_data = dataprocessor.compute_all(data['results'],
+                                                            data['words'])
+        # print 'user:', user
+        # print corr_data
+        # print overall_data
+        all_computed_data[user] = \
+            {'corr_data': corr_data, 'overall_data': overall_data}
+    output = gen_all_user_data_list(all_user_data, all_computed_data)
+
+    return output
+
+
+def analyze_word_lists_to_csv(word_lists, user_list=None, get_distance=False):
+    """Process word lists."""
+    output = analyze_word_lists(word_lists,
+                                user_list=user_list,
+                                get_distance=get_distance)
+
+    if get_distance:
+        prefix = 'distances_'
+    else:
+        prefix = 'matrices_'
+
+    response = gen_csv(word_list=None, input_list=output, prefix=prefix)
+
+    return response
+
+
 def process_word_list(words_file):
     """Process csv of word lists."""
     with open(words_file, 'r') as f:
-        all_user_data = thoughtslib.process_word_lists(f.read())
+        all_user_data = thoughtslib.process_word_lists_file_str(f.read())
 
     all_computed_data = {}
     for user, data in all_user_data.iteritems():
@@ -141,8 +177,8 @@ def process_word_list_file(get_distance=False,
     if not file_contents:
         return None
 
-    all_user_data = thoughtslib.process_word_lists(file_contents,
-                                                   get_distance=get_distance)
+    all_user_data = thoughtslib.process_word_lists_file_str(file_contents,
+                                                            get_distance=get_distance)
     all_computed_data = {}
     for user, data in all_user_data.iteritems():
         corr_data, overall_data = dataprocessor.compute_all(data['results'],
@@ -282,8 +318,8 @@ def gen_summary_csv(get_distance=True, add_header=True):
     if not file_contents:
         return None
 
-    all_user_data = thoughtslib.process_word_lists(file_contents,
-                                                   get_distance=get_distance)
+    all_user_data = thoughtslib.process_word_lists_file_str(file_contents,
+                                                            get_distance=get_distance)
     all_computed_data = {}
     for user, data in all_user_data.iteritems():
         corr_data, overall_data = dataprocessor.compute_all(data['results'],
@@ -340,8 +376,8 @@ def gen_serial_flow_csv(get_distance=True, add_header=True):
     if not file_contents:
         return None
 
-    all_user_data = thoughtslib.process_word_lists(file_contents,
-                                                   get_distance=get_distance)
+    all_user_data = thoughtslib.process_word_lists_file_str(file_contents,
+                                                            get_distance=get_distance)
     all_computed_data = {}
     for user, data in all_user_data.iteritems():
         corr_data, overall_data = dataprocessor.compute_all(data['results'],
