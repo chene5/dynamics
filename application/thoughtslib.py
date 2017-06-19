@@ -218,7 +218,7 @@ def setup_constructs():
                                              load_zip=True)
         else:
             if construct_filename.endswith('.zip'):
-                pass
+                new_construct = None
                 """XXX: gensim doesn't allow passing zip file streams.
                 new_construct = CreativityConstruct(construct_name,
                                                     construct_path,
@@ -1064,7 +1064,36 @@ def word_saver():
     return dumps(return_val)
 
 
-def process_word_lists(words_file, get_distance=False):
+def process_word_lists(word_lists, user_list=None, get_distance=False):
+    all_word_list = []
+    all_user_data = {}
+    thought_construct = get_user_construct()
+    # If we don't have a user list, make a numeric list of users.
+    if not user_list:
+        user_list = range(0, len(word_lists))
+
+    for this_word_list, p_id in zip(word_lists, user_list):
+        user_data = {}
+        user_data['words'] = this_word_list
+        user_data['p_id'] = p_id
+        all_word_list.append(this_word_list)
+
+        if get_distance:
+            result = thought_construct.query_list_distance(this_word_list)
+        else:
+            result = thought_construct.query_list(this_word_list)
+
+        text = format_pw(this_word_list, result)
+        if not text:
+            text = "Something weird happened with \
+                          \"{}\"".format(p_id)
+        user_data['results'] = result
+        user_data['results_text'] = text
+        all_user_data[p_id] = user_data
+    return all_user_data
+
+
+def process_word_lists_file_str(words_file, get_distance=False):
     words_file_list = words_file.splitlines()
     thought_construct = get_user_construct()
     # header = words_file_list[0]
@@ -1317,7 +1346,7 @@ def get_seed_word(user_id=None):
     return seed_word
 
 
-def get_set_seed_word(user_id):
+def get_set_seed_word():
     seed_word = sample(SEED_WORDS, 1)[0]
     save_single_word(seed_word)
     return seed_word
