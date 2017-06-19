@@ -14,9 +14,34 @@ import sys
 from flask import make_response
 
 import thoughtslib
+import researchlib
 from eec_utils import list_type_in_dir
 
 _in_filename = None
+
+
+def clean_tweet_text(tweet_text):
+    # Convert to utf-8.
+    # cleaned_tweet_text = str(tweet['cleaned_tweet_text'].encode('utf-8', 'ignore'))
+    cleaned_tweet_text = tweet_text.encode('ascii', 'replace')
+    # Replace ? with a space
+    cleaned_tweet_text = cleaned_tweet_text.replace('?', ' ')
+    # Replace newlines with spaces.
+    cleaned_tweet_text = cleaned_tweet_text.replace('\n', ' ')
+    cleaned_tweet_text = cleaned_tweet_text.replace('\r', ' ')
+    # Clean out some of the punctuation
+    # cleaned_tweet_text = cleaned_tweet_text.translate(None, string.punctuation)
+    cleaned_tweet_text = cleaned_tweet_text.replace(',', '')
+    cleaned_tweet_text = cleaned_tweet_text.replace('.', '')
+    cleaned_tweet_text = cleaned_tweet_text.replace('!', '')
+    cleaned_tweet_text = cleaned_tweet_text.replace(':', '')
+    cleaned_tweet_text = cleaned_tweet_text.replace(';', '')
+    cleaned_tweet_text = cleaned_tweet_text.replace('"', '')
+    cleaned_tweet_text = cleaned_tweet_text.replace('/', '')
+    cleaned_tweet_text = cleaned_tweet_text.replace('@', '')
+    cleaned_tweet_text = cleaned_tweet_text.replace('#', '')
+    cleaned_tweet_text = cleaned_tweet_text.replace('&amp;', '')
+    return cleaned_tweet_text
 
 
 def process_one_file(in_filename):
@@ -57,22 +82,7 @@ def process_one_file(in_filename):
                 continue
             tweet_count += 1
 
-            # Convert to utf-8.
-            # text = str(tweet['text'].encode('utf-8', 'ignore'))
-            text = tweet['text'].encode('ascii', 'replace')
-            # Replace ? with a space
-            text = text.replace('?', ' ')
-            # Clean out some of the punctuation
-            # text = text.translate(None, string.punctuation)
-            text = text.replace(',', '')
-            text = text.replace('.', '')
-            text = text.replace(':', '')
-            text = text.replace('/', '')
-            text = text.replace('@', '')
-            text = text.replace('#', '')
-            text = text.replace('&amp;', '')
-            # print text
-
+            text = clean_tweet_text(tweet['text'])
             this_tweet = text
             text_list.append(text)
             tweets += text + ','
@@ -160,6 +170,60 @@ def process_this_dir():
     return response
 
 
+def get_tweet_text_list_from_json(in_filename):
+    # print in_filename
+    tweeter_data = {'tweeter': '',
+                    'tweet_count': 0,
+                    'text_list': []}
+    text_list = []
+    tweet_count = 0
+    # Get the name of the tweeter.
+    tweeter = os.path.splitext(in_filename)[0].lower()
+    tweeter = tweeter.lstrip('./')
+    tweeter = tweeter.rstrip('_0')
+    # print tweeter
+    tweeter_data['tweeter'] = tweeter
+
+    # Read tweet file.
+    with open(in_filename, 'r') as in_f:
+        for line in in_f:
+            tweet = json.loads(line)
+            if not tweet:
+                continue
+
+            text = clean_tweet_text(tweet['text'])
+            text_list.append(text)
+            tweet_count += 1
+
+    tweeter_data['tweet_count'] = tweet_count
+    tweeter_data['text_list'] = text_list
+
+    return tweeter_data
+
+
+def get_tweet_text_lists_from_dir():
+    file_list = list_type_in_dir('.', '.json')
+    tweeter_dict = {}
+    for filename in file_list:
+        tweeter_data = get_tweet_text_list_from_json(filename)
+        tweeter_dict[tweeter_data['tweeter']] = tweeter_data['text_list']
+
+    return tweeter_dict
+
+
+def get_matrices_from_dir(get_distance=False):
+    tweeter_dict = get_tweet_text_lists_from_dir()
+    text_list = []
+    sorted_tweet_ids = sorted(tweeter_dict)
+
+    for tweet_id in sorted_tweet_ids:
+        text_list.append(tweeter_dict[tweet_id])
+    csv_response = researchlib.analyze_word_lists_to_csv(text_list,
+                                                         sorted_tweet_ids,
+                                                         get_distance=get_distance)
+    return csv_response
+
+
 def usage():
     print __doc__
 
@@ -168,12 +232,14 @@ def parse_args(argv):
     # Parse the command-line arguments
     global _in_filename
 
-    args_dict = {"in_filename": _in_filename}
+    args_dict = {"in_filename": _in_filename,
+                 'matrices': False}
 
     try:
         opts, args = getopt.getopt(argv,
-                                   "hf:i:",
+                                   "hmf:i:",
                                    ["help",
+                                    "matrices",
                                     "file",
                                     "input"])
     except getopt.GetoptError:
@@ -184,10 +250,13 @@ def parse_args(argv):
         if opt in ("-h", "--help"):
             usage()
             sys.exit()
+        elif opt in ("-m", "--matrices"):
+            args_dict["matrices"] = True
+            print("matrices:", args_dict["matrices"])
         elif opt in ("-f", "--file"):
             args_dict["in_filename"] = arg
             print("in_filename:", args_dict["in_filename"])
-        elif opt in ("-i", "--iv"):
+        elif opt in ("-i", "--input"):
             args_dict["in_filename"] = arg
             print("in_filename:", args_dict["in_filename"])
 
@@ -197,8 +266,11 @@ def parse_args(argv):
 if __name__ == '__main__':
     args_dict = parse_args(sys.argv[1:])
 
-    in_filename = args_dict["in_filename"]
+    if args_dict['matrices']:
+        get_matrices_from_dir()
+        sys.exit()
 
+    in_filename = args_dict["in_filename"]
     if in_filename:
         process_one_file(in_filename)
     else:
