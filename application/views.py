@@ -80,7 +80,7 @@ def forward_flow():
             return redirect(url_for('graph'))
 
     # Get a new seed word.
-    thoughtslib.get_set_seed_word(user_id)
+    thoughtslib.get_set_seed_word()
 
     output, old_word, user_words, word_count = thoughtslib.start_flow()
 
