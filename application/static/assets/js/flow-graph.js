@@ -23,8 +23,13 @@ function flow_graph(flow_data, full_word_list, margin) {
 
   // Scale the range of the data
   x.domain([0, word_list.length]);
+
   if (d3.min(data, function(d) { return d.flow}) > 0) {
-	  y.domain([0, d3.max(data, function(d) { return d.flow})])
+	  // y.domain([0, d3.max(data, function(d) { return d.flow})])
+		y_range = d3.extent(data, function(d) { return d.flow});
+		y_range[0] = y_range[0] - .1;
+		y_range[1] = y_range[1] + .1;
+		y.domain(y_range);
   }
   else {
 	  y.domain(d3.extent(data, function(d) { return d.flow}));
@@ -44,6 +49,8 @@ function flow_graph(flow_data, full_word_list, margin) {
 
   xAxis = d3.axisBottom(x).tickValues(ticks).tickFormat(function(d,i) { return full_word_list[i] });
 
+  /*
+  // This is for a wider view of the graph.
 	if (data_length == 0) {
 	  // Add the X Axis
 	  svg.append("g")
@@ -58,6 +65,12 @@ function flow_graph(flow_data, full_word_list, margin) {
       .attr("transform", "translate(0," + y(0) + ")")
       .call(xAxis);
   }
+  */
+  // Add the X Axis
+  svg.append("g")
+     .style("font-size", "14px")
+     .attr("transform", "translate(0," + height + ")")
+     .call(xAxis);
 
   // text label for the x axis
   /*
