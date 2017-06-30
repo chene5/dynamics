@@ -314,8 +314,7 @@ def cosine_distance(vec_lsi_1, vec_lsi_2):
         # print coord[1]
         vector2.append(coord[1])
 
-    # We're scaling the semantic distance to: 0 to 1.
-    flow = cosine(vector1, vector2) / 2
+    flow = cosine(vector1, vector2)
 
     return flow
 

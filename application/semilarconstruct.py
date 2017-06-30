@@ -248,7 +248,7 @@ class SemilarConstruct(ThoughtConstruct):
         # print text2, "semantic space vector:", vec_lsi2
         try:
             # Compute the cosine distance
-            result = cosine(vec_lsi1, vec_lsi2) / 2
+            result = cosine(vec_lsi1, vec_lsi2)
         except ValueError:
             # A ValueError: Probably one of the words wasn't in the dictionary.
             logging.debug('Cosine similarity ValueError')
