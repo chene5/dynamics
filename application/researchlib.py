@@ -43,7 +43,8 @@ def do_research():
             message = 'No file uploaded'
     elif 'analyzeWordsFileBasic' in request.form:
         response = process_word_list_file(add_header=True,
-                                          add_summary_stats=False)
+                                          add_summary_stats=False,
+                                          prefix='similarities_')
         if response:
             return response
         else:
@@ -51,7 +52,8 @@ def do_research():
     elif 'analyzeFileDist' in request.form:
         response = process_word_list_file(get_distance=True,
                                           add_header=True,
-                                          add_summary_stats=False)
+                                          add_summary_stats=False,
+                                          prefix='distances_')
         if response:
             return response
         else:
@@ -171,7 +173,8 @@ def process_word_list(words_file):
 
 
 def process_word_list_file(get_distance=False,
-                           add_header=True, add_summary_stats=True):
+                           add_header=True, add_summary_stats=True,
+                           prefix=None):
     """Process csv of word lists."""
     file_contents = get_file_contents()
     if not file_contents:
@@ -193,10 +196,11 @@ def process_word_list_file(get_distance=False,
     output = gen_all_user_data_list(all_user_data, all_computed_data,
                                     add_header=add_header,
                                     add_summary_stats=add_summary_stats)
-    if get_distance:
-        prefix = 'distances_'
-    else:
-        prefix = 'matrices_'
+    if not prefix:
+        if get_distance:
+            prefix = 'distances_'
+        else:
+            prefix = 'matrices_'
     response = gen_csv(word_list=None, input_list=output, prefix=prefix)
 
     return response
