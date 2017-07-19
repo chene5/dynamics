@@ -235,14 +235,16 @@ def setup_constructs():
         # Now load constructs from S3
         add_s3_constructs()
 
+    # Set the default to tasa_7 if possible.
+    if 'tasa_7' in THOUGHT_CONSTRUCTS:
+        _construct_name = 'tasa_7'
+    elif 'TASA 7' in THOUGHT_CONSTRUCTS:
+        _construct_name = 'TASA 7'
+
     print 'Loaded {} constructs.'.format(len(THOUGHT_CONSTRUCTS))
 
     # XXX: Setup the _old_word global for now.
     _old_word = THOUGHT_CONSTRUCTS[_construct_name].get_random_word()
-
-    # Set the default to tasa_7 if possible.
-    if 'tasa_7' in THOUGHT_CONSTRUCTS:
-        _construct_name = 'tasa_7'
 
 
 # XXX: Setup up the constructs.
